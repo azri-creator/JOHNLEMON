@@ -1,0 +1,29 @@
+<!-- STARTER SCENE (hook). One example of each core device, anchored to VO words with "scene:n" (n-th word of that scene).
+     Rewrite the copy and beats per video (plan first: references/motion_vocabulary.md).
+     HOOK: two-line headline re-centring word by word; line 1 lifts and shrinks as line 2 lands; a thin bar fills slowly and stalls. -->
+<section class="scene" id="hook">
+  <div class="cam" id="hook-cam"><div class="step" id="hook-step">
+    <div class="layer" id="hook-lift">
+      <div class="hl" id="hook-h1" data-y="900" data-size="118">
+        <span data-at="0.1">Nak</span><span data-at="hook:1">buat</span><span class="blue" data-at="hook:2">video AI?</span>
+      </div>
+    </div>
+    <div class="hl" id="hook-h2" data-y="1010" data-size="92">
+      <span data-at="hook:5">Tak tahu</span><span class="blue" data-at="hook:7">mula</span><span class="blue" data-at="hook:8">dari mana?</span>
+    </div>
+    <div id="hook-bar" style="position: absolute; left: 310px; top: 1118px; width: 460px; height: 12px; border-radius: 6px; background: rgba(72, 152, 248, 0.14); opacity: 0">
+      <div id="hook-fill" style="width: 4%; height: 100%; border-radius: 6px; background: var(--grad)"></div>
+    </div>
+  </div></div>
+</section>
+<script>
+scene("hook", (S) => {
+  cam(S, { steps: [sw("hook", 2, -0.05), sw("hook", 5, -0.08)], push: 0.04 });
+  headline("hook-h1");
+  headline("hook-h2");
+  gsap.set("#hook-lift", { transformOrigin: "50% 47%" });
+  tl.fromTo("#hook-lift", { y: 0, scale: 1 }, { y: -110, scale: 0.8, duration: 0.4, ease: EASE_IO }, sw("hook", 5, -0.08));
+  tl.fromTo("#hook-bar", { opacity: 0 }, { opacity: 1, duration: 0.3, ease: EASE_OUT }, sw("hook", 7, -0.05));
+  curve("#hook-fill", "width", sw("hook", 7), 1.4, (p) => 0.04 + 0.3 * Math.pow(p, 0.6), { tpl: (v) => v * 100 + "%" });
+});
+</script>

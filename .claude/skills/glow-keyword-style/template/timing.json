@@ -1,0 +1,15 @@
+{
+  "_comment": "Seconds on the output timeline. Footage is used 1:1, so output time == source time until SRC_END; the end card holds after it. Worked example = the first 14.5 s of the client's Jago Prompt remake (hook + concept intro) plus its CTA end card. Word starts come from Whisper large-v3, refined on the voice envelope (scripts/refine_times.py).",
+  "SRC_END": 14.5,
+  "TOTAL": 17.5,
+  "CUT": { "B": 6.27, "C": 14.57 },
+  "L": { "hookFrame": [0, 6.04], "cta": 14.5 },
+  "T": {
+    "macam": 0.0, "nakBuat": 0.48, "AI": 0.9, "nampak": 1.14, "real": 1.78, "macamNi": 2.06,
+    "saya": 2.74, "dah": 2.96, "try_": 3.16, "mm1": 3.44, "mm2": 3.74, "prompt1": 4.06, "tapi1": 4.44, "muka1": 4.62,
+    "dia": 5.06, "asyik": 5.18, "lari": 5.44, "je1": 5.9, "hookEnd": 6.04,
+    "sebenarnya": 6.3, "sebelum": 6.88, "fikir": 7.48, "pasal": 7.76, "prompts": 8.06, "korang1": 8.6,
+    "character1": 9.38, "sheet1": 9.74, "dulu": 10.12, "nak2": 10.62, "video2": 10.98, "muka2": 11.96,
+    "kekal": 12.5, "sama2": 12.8, "wajib": 13.24, "start": 13.74, "sini": 14.14
+  }
+}

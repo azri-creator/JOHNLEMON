@@ -1,0 +1,8 @@
+#root{position:absolute;inset:0;overflow:hidden;font-family:Inter,sans-serif;color:#F5F7FA;background:transparent}
+.vid{position:absolute;left:0;top:0;width:1080px;height:1920px;object-fit:cover}
+.glass{background:rgba(9,13,18,.68);-webkit-backdrop-filter:blur(24px) saturate(1.15);backdrop-filter:blur(24px) saturate(1.15);border:1.5px solid rgba(255,255,255,.16);border-radius:26px;box-shadow:0 28px 70px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.10)}
+.mask{display:block;overflow:hidden}
+.ln{display:inline-block;white-space:nowrap}
+.lime{color:#FFE600}
+.chip{position:absolute;display:inline-flex;align-items:center;gap:14px;height:66px;padding:0 30px;border-radius:100px;font-weight:700;font-size:28px;letter-spacing:.09em;text-transform:uppercase;color:#F5F7FA;white-space:nowrap}
+.chip i{width:14px;height:14px;border-radius:50%;background:#FFE600;display:block}

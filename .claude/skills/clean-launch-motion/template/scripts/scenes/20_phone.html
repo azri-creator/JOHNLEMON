@@ -1,0 +1,52 @@
+<!-- STARTER SCENE (phone): angled dark-bezel phone rises from the bottom edge (cropped by the frame) with speed blur,
+     punch-in + glow ring on the keyword, then a tilted message card swings in. Replace the .ph placeholder with a real
+     <img src="assets/img/..."> or a <video id="..." src="assets/video/..." muted data-start=".." data-duration=".."> (videos need an id). -->
+<section class="scene" id="phone">
+  <div class="cam" id="phone-cam"><div class="step" id="phone-step">
+    <div class="hl" id="phone-h1" data-y="330" data-size="100">
+      <span class="blue" data-at="phone:3">1 produk.</span><span data-at="phone:6">1 mesej.</span>
+    </div>
+    <div id="phone-rise" data-layout-allow-overflow style="position: absolute; left: 200px; top: 640px; width: 680px; height: 1448px">
+      <div class="layer" id="phone-float">
+        <div class="layer" id="phone-tilt">
+          <div class="phone" style="--pw: 680px">
+            <div class="scr" style="background: #f4f6fb">
+              <div class="island"></div>
+              <div id="phone-shot" style="position: absolute; top: 140px; left: 30px; border-radius: 30px; overflow: hidden;
+                box-shadow: 0 0 0 0px rgba(72, 152, 248, 0), 0 30px 80px rgba(46, 72, 140, 0.16), 0 8px 24px rgba(46, 72, 140, 0.1)">
+                <div class="ph" style="width: 582px; height: 560px; border-radius: 0; font-size: 36px">Gambar produk (gantikan)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="phone-msg" data-layout-allow-overlap style="position: absolute; left: 110px; top: 1250px; width: 860px; opacity: 0">
+      <div style="background: #fff; border-radius: 36px; padding: 30px 40px 36px; box-shadow: var(--deep)">
+        <span class="chip" style="font-size: 26px">CONTOH MESEJ</span>
+        <div style="margin-top: 18px; font-weight: 500; font-size: 48px; line-height: 1.22; letter-spacing: -0.02em">“Satu mesej yang jelas untuk produk ini.”</div>
+      </div>
+    </div>
+  </div></div>
+</section>
+<script>
+scene("phone", (S) => {
+  const enterAt = sw("phone", 0, -0.12), punchAt = sw("phone", 3, -0.06), msgAt = sw("phone", 5, -0.02);
+  cam(S, { steps: [punchAt, msgAt], push: 0.04 });
+  headline("phone-h1");
+  tl.fromTo("#phone-rise", { y: 1400 }, { y: 0, duration: 0.7, ease: EASE_OUT }, enterAt);
+  mblur("#phone-rise", enterAt, 0.7, EASE_OUT, 1400);
+  tl.fromTo("#phone-rise", { y: 0 }, { y: -30, duration: 0.35, ease: EASE_OUT, immediateRender: false }, punchAt);
+  const vp = [0, -404]; // vanishing point = frame centre, seen from the phone centre (540, 1364)
+  poseTo("#phone-tilt", { rx: 40, ry: 4, rz: -18, vp }, { rx: 22, ry: 9, rz: -8, vp }, enterAt, 0.7, EASE_OUT);
+  float("#phone-float", "y", enterAt, S.end, 8, 1.4);
+  tl.fromTo("#phone-float", { scale: 1 }, { scale: 1.08, duration: 0.35, ease: EASE_OUT }, punchAt);
+  tl.fromTo("#phone-shot",
+    { boxShadow: "0 0 0 0px rgba(72,152,248,0), 0 30px 80px rgba(46,72,140,0.16), 0 8px 24px rgba(46,72,140,0.1)" },
+    { boxShadow: "0 0 0 6px rgba(72,152,248,0.6), 0 30px 80px rgba(46,72,140,0.16), 0 8px 24px rgba(46,72,140,0.1)", duration: 0.35, ease: EASE_OUT }, punchAt);
+  tl.fromTo("#phone-msg", { x: 760 }, { x: 0, duration: 0.5, ease: backOut }, msgAt);
+  curve("#phone-msg", "rotation", msgAt, 0.45, (p) => mix(9, -3, EASE_OUT(p)), { ir: true });
+  curve("#phone-msg", "opacity", msgAt, 0.45, (p) => Math.min(1, EASE_OUT(p) * 1.5));
+  mblur("#phone-msg", msgAt, 0.5, backOut, 760);
+});
+</script>

@@ -1,0 +1,43 @@
+<!doctype html><html><head><meta charset="UTF-8" /></head><body><template>
+<style>
+/*COMMON*/
+.sp{position:absolute;left:0;width:1080px;text-align:center;font-weight:900;font-size:250px;line-height:1;letter-spacing:-0.05em;color:#F5F7FA;white-space:nowrap}
+#t1,#t1r,#t1c{top:110px}
+#t2,#t2r,#t2c{top:340px}
+#t1,#t2{text-shadow:0 0 40px rgba(111,177,255,.75),0 0 90px rgba(111,177,255,.4)}
+#t2{color:#9CCBFF}
+.rr{color:rgba(255,40,80,.75);mix-blend-mode:screen}
+.cc{color:rgba(40,230,255,.75);mix-blend-mode:screen}
+#aura2{filter:drop-shadow(0 0 16px rgba(111,177,255,.95)) drop-shadow(0 0 50px rgba(111,177,255,.6));opacity:0}
+#bolts{position:absolute;left:0;top:0;width:1080px;height:1920px;pointer-events:none}
+#spd{position:absolute;left:0;top:0;width:1080px;height:1920px;pointer-events:none;opacity:0}
+#wrapT{opacity:0}
+</style>
+<div id="root" data-composition-id="super" data-width="1080" data-height="1920">
+  <svg id="spd" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"><g id="spg" stroke="#eef5ff" stroke-linecap="round"></g></svg>
+  <video id="aura2" class="vid" src="assets/person.webm" data-start="0" data-duration="1.65" data-media-start="27.5" muted playsinline></video>
+  <video id="ptop2" class="vid" src="assets/person.webm" data-start="0" data-duration="1.65" data-media-start="27.5" muted playsinline></video>
+  <svg id="bolts" viewBox="0 0 1080 1920" xmlns="http://www.w3.org/2000/svg"><g id="b1" opacity="0" fill="none" stroke="#f2f7ff" stroke-width="5" stroke-linejoin="round" style="filter:drop-shadow(0 0 12px #6FB1FF) drop-shadow(0 0 30px #6FB1FF)"></g><g id="b2" opacity="0" fill="none" stroke="#f2f7ff" stroke-width="5" stroke-linejoin="round" style="filter:drop-shadow(0 0 12px #6FB1FF) drop-shadow(0 0 30px #6FB1FF)"></g></svg>
+</div>
+<script>
+function rng(s){return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const NS="http://www.w3.org/2000/svg";
+function bolt(g,R,x0,y0,x1,y1,seg,jit){let d=`M${x0},${y0}`;for(let i=1;i<=seg;i++){const k=i/seg;const x=x0+(x1-x0)*k+(i<seg?(R()-.5)*jit:0),y=y0+(y1-y0)*k+(i<seg?(R()-.5)*jit*.4:0);d+=` L${x.toFixed(1)},${y.toFixed(1)}`}const p=document.createElementNS(NS,"path");p.setAttribute("d",d);g.appendChild(p);
+  // a branch
+  const q=document.createElementNS(NS,"path");const bx=x0+(x1-x0)*.5,by=y0+(y1-y0)*.5;q.setAttribute("d",`M${bx},${by} L${bx+(R()-.5)*180},${by+90+R()*120} L${bx+(R()-.5)*240},${by+200+R()*160}`);q.setAttribute("stroke-width","3");g.appendChild(q)}
+const g1=document.getElementById("b1"),g2=document.getElementById("b2");
+const Ra=rng(9);bolt(g1,Ra,120,0,330,1050,14,140);bolt(g1,Ra,980,0,780,980,13,150);
+const Rb=rng(31);bolt(g2,Rb,40,260,380,1180,12,160);bolt(g2,Rb,1060,180,700,1120,15,150);bolt(g2,Rb,560,0,560,300,6,90);
+const sg=document.getElementById("spg"),Rs=rng(5);
+for(let i=0;i<46;i++){const a=i/46*Math.PI*2+Rs()*.08,r0=380+Rs()*140,r1=r0+260+Rs()*420,l=document.createElementNS(NS,"line");l.setAttribute("x1",540+Math.cos(a)*r0);l.setAttribute("y1",760+Math.sin(a)*r0);l.setAttribute("x2",540+Math.cos(a)*r1);l.setAttribute("y2",760+Math.sin(a)*r1);l.setAttribute("stroke-width",(2+Rs()*5).toFixed(1));l.setAttribute("opacity",(.35+Rs()*.6).toFixed(2));sg.appendChild(l)}
+const tl=gsap.timeline({paused:true});
+// local 0 = 27.5 s
+tl.fromTo("#aura2",{opacity:0},{opacity:1,duration:.3},.2);
+tl.set("#b1",{opacity:1},.9);tl.set("#b1",{opacity:0},1.02);tl.set("#b1",{opacity:.7},1.06);tl.set("#b1",{opacity:0},1.12);
+tl.set("#b2",{opacity:1},1.28);tl.set("#b2",{opacity:0},1.4);
+tl.fromTo("#spd",{opacity:0,scale:.9},{opacity:1,scale:1.12,duration:.12,ease:"power2.out",immediateRender:false},.9);
+tl.to("#spd",{opacity:0,duration:.3},1.05);
+tl.to(["#aura2"],{opacity:0,duration:.22,ease:"power2.in"},1.42);
+window.__timelines["super"]=tl;
+</script>
+</template></body></html>

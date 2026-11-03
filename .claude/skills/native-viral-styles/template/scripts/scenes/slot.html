@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="UTF-8" /></head><body><template>
+<style>
+/*COMMON*/
+#win{position:absolute;left:110px;top:960px;width:860px;height:180px;overflow:hidden;opacity:0}
+#reel{position:absolute;left:0;top:0;width:860px}
+.wd{height:180px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:84px;letter-spacing:-0.04em;color:#F5F7FA;white-space:nowrap}
+#fin{position:absolute;left:0;top:0;width:860px;height:180px;display:flex;align-items:center;justify-content:center;gap:20px;font-weight:900;font-size:80px;letter-spacing:-0.04em;color:#F5F7FA;opacity:0}
+#lbl{left:110px;top:880px;opacity:0}
+.fade{position:absolute;left:0;width:860px;height:50px;pointer-events:none}
+</style>
+<div id="root" data-composition-id="slot" data-width="1080" data-height="1920">
+  <div class="chip glass" id="lbl"><i></i>Any content</div>
+  <div id="win" class="glass">
+    <div id="reel"><div class="wd">Talking head</div><div class="wd">Iklan</div><div class="wd">Motion</div><div class="wd">Tutorial</div><div class="wd">Reels</div><div class="wd">Podcast</div><div class="wd">Vlog</div><div class="wd">Any content</div></div>
+    <div id="fin"><svg width="74" height="74" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="#FFE600" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg>Automate</div>
+  </div>
+</div>
+<script>
+const tl=gsap.timeline({paused:true});
+// local 0 = 32.25 s
+tl.fromTo("#win",{opacity:0,scale:.9},{opacity:1,scale:1,duration:.4,ease:"expo.out"},.6);
+tl.fromTo("#lbl",{opacity:0,y:16},{opacity:1,y:0,duration:.35,ease:"expo.out"},.67);
+tl.fromTo("#reel",{y:0},{y:-180*7,duration:.85,ease:"power4.out"},.67);
+tl.to("#reel",{opacity:0,y:-180*7-80,duration:.1,ease:"power2.in"},1.62);
+tl.fromTo("#fin",{opacity:0,y:80},{opacity:1,y:0,duration:.35,ease:"expo.out"},1.76);
+tl.to("#win",{borderColor:"rgba(255,255,255,.7)",boxShadow:"0 0 50px rgba(255,255,255,.12)",duration:.25},1.76);
+tl.to(["#win","#lbl"],{opacity:0,y:-30,duration:.2,ease:"power2.in"},2.1);
+window.__timelines["slot"]=tl;
+</script>
+</template></body></html>

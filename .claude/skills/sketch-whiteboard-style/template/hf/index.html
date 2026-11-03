@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="ms" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --cream: #f2ede3;
+        --ink: #26262b;
+        --W: 1080px;
+        --H: 1920px;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: var(--W); height: var(--H); overflow: hidden; background: var(--cream); }
+      #root { width: 100%; height: 100%; position: relative; overflow: hidden; background: var(--cream); }
+      #paper { position: absolute; inset: 0; background: var(--cream); }
+      #world { position: absolute; left: 0; top: 0; width: var(--W); height: var(--H); overflow: visible; will-change: transform; }
+      #thread { position: absolute; left: 0; top: 0; overflow: visible; }
+      .board { position: absolute; left: 0; top: 0; width: var(--W); height: var(--H); }
+      .board svg { position: absolute; left: 0; top: 0; width: var(--W); height: var(--H); overflow: visible; }
+      #hand { position: absolute; left: 0; top: 0; width: 1px; height: 1px; overflow: visible; will-change: transform; }
+      #hand svg { position: absolute; left: 0; top: 0; overflow: visible; }
+      .ln { stroke: #26262b; stroke-width: 7; stroke-linejoin: round; stroke-linecap: round; }
+      .ln5 { stroke: #26262b; stroke-width: 5; stroke-linejoin: round; stroke-linecap: round; }
+      .hd { font-family: "Archivo Black", sans-serif; fill: #26262b; }
+      .tt { font-family: "Poppins", sans-serif; font-weight: 700; fill: #26262b; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="61.8" data-width="1080" data-height="1920">
+      <div id="paper"></div>
+      <div id="world">
+        <svg id="thread"></svg>
+      </div>
+      <div id="hand">
+        <svg width="10" height="10">
+          <g transform="translate(10 18) rotate(48)" fill="#26262b" opacity="0.13">
+            <polygon points="0,0 70,-22 70,22" /><rect x="70" y="-22" width="330" height="44" rx="10" />
+          </g>
+          <g transform="rotate(48)">
+            <polygon points="0,0 70,-22 70,22" fill="#ecd2ad" stroke="#26262b" stroke-width="4" stroke-linejoin="round" />
+            <polygon points="0,0 24,-7.5 24,7.5" fill="#26262b" />
+            <rect x="70" y="-22" width="250" height="44" fill="#2d5bff" stroke="#26262b" stroke-width="4" />
+            <path d="M70 -7 L320 -7 M70 7 L320 7" stroke="#1f45d6" stroke-width="3" />
+            <rect x="320" y="-23" width="38" height="46" fill="#cfc9bd" stroke="#26262b" stroke-width="4" />
+            <path d="M332 -23 L332 23 M346 -23 L346 23" stroke="#26262b" stroke-width="3" />
+            <rect x="356" y="-21" width="44" height="42" rx="10" fill="#f0453a" stroke="#26262b" stroke-width="4" />
+          </g>
+        </svg>
+      </div>
+      <audio id="mix" src="assets/mix.wav" data-start="0" data-duration="61.8" data-track-index="10" data-volume="1"></audio>
+    </div>
+    <script>
+      const NS = "http://www.w3.org/2000/svg";
+      const DUR = 61.8;
+      const FMT = "9x16"; // 9x16 | 16x9 | 4x3 (scripts/build_fmt.py writes the landscape copies)
+      const W = FMT === "16x9" ? 1920 : FMT === "4x3" ? 1440 : 1080, H = FMT === "9x16" ? 1920 : 1080, LAND = FMT !== "9x16";
+      // charcoal on cream, one striking accent per board (+ its light tint for marker highlights)
+      const INK = "#26262b", CREAM = "#f2ede3", CARD = "#fbf8f1", GREY = "#6b6a70";
+      const BL = "#2d5bff", RD = "#f0453a", GR = "#14a85a", PU = "#8b5cf6";
+      const BLT = "#a9c0ff", RDT = "#ffa79f", GRT = "#8fe0b2", PUT = "#cdb9ff";
+      const $ = (id) => document.getElementById(id);
+      const tl = gsap.timeline({ paused: true });
+      const SEGS = []; // pen segments in WORLD coords: {t0, t1, b, f(p) -> [x, y]}
+
+      // ---------- one long sheet: board i sits at x = i * W, the camera pans along it ----------
+      // [id, time its first stroke starts, accent]
+      const BOARDS = [
+        ["b1", 0, BL], ["b2", 3.15, BL], ["b3", 6.29, RD], ["b4", 10.12, GR], ["b5", 16.3, RD], ["b6", 20.93, PU], ["b7", 23.4, BL], ["b8", 25.95, GR],
+        ["b9", 30.7, BL], ["b10", 37.45, GR], ["b11", 40.75, PU], ["b12", 44.97, BL], ["b13", 47.9, GR], ["b14", 51.27, RD], ["b15", 56.6, RD],
+      ];
+      BOARDS.forEach(([id], i) => {
+        $("world").insertAdjacentHTML("beforeend", `<div class="board" id="${id}" data-i="${i}"><svg id="${id}_svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><defs id="${id}_defs"></defs></svg></div>`);
+        gsap.set($(id), { x: i * W });
+      });
+      const th = $("thread"); th.setAttribute("width", W * BOARDS.length); th.setAttribute("height", H); th.setAttribute("viewBox", `0 0 ${W * BOARDS.length} ${H}`);
+      const add = (b, html) => $(b + "_svg").insertAdjacentHTML("beforeend", html);
+
+      // ---------- shared shapes ----------
+      const star = (x, y, r) => `M${x} ${y - r} Q${x + r * 0.12} ${y - r * 0.12} ${x + r} ${y} Q${x + r * 0.12} ${y + r * 0.12} ${x} ${y + r} Q${x - r * 0.12} ${y + r * 0.12} ${x - r} ${y} Q${x - r * 0.12} ${y - r * 0.12} ${x} ${y - r} Z`;
+      const T = (id, x, y, s, cls, size, extra) => `<text id="${id}" x="${x}" y="${y}" text-anchor="middle" class="${cls}" font-size="${size}" ${extra || ""}>${s}</text>`;
+      const fillc = (c) => `style="fill:${c}"`;
+      const gear = (cx, cy, r1, r2, n) => {
+        let d = "";
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2, w = Math.PI / n * 0.55;
+          const pts = [[a - w * 1.2, r1], [a - w * 0.7, r2], [a + w * 0.7, r2], [a + w * 1.2, r1]];
+          pts.forEach(([aa, rr], j) => { d += (i === 0 && j === 0 ? "M" : "L") + (cx + Math.cos(aa) * rr).toFixed(1) + " " + (cy + Math.sin(aa) * rr).toFixed(1) + " "; });
+        }
+        return d + "Z";
+      };
+
+      // ===== B1: who it's for (blue) =====
+      add("b1", T("b1a", 540, 690, "CIKGU,", "hd", 132) + T("b1b", 540, 850, "LECTURER,", "hd", 132) + T("b1c", 540, 1010, "TRAINER", "hd", 132)
+        + `<g id="b1k1"><path d="${star(250, 520, 34)}" fill="${BL}" class="ln5"/></g>`);
+
+      // ===== B2: old slides in the laptop (blue) =====
+      add("b2", T("b2t", 540, 430, "Slide lama dalam laptop tu...", "tt", 58)
+        + `<g id="b2l">
+            <rect x="250" y="590" width="580" height="390" rx="24" fill="${CARD}" class="ln"/>
+            <path d="M190 980 L890 980 L935 1032 Q940 1048 922 1048 L158 1048 Q140 1048 145 1032 Z" fill="${BL}" class="ln"/>
+            <rect x="285" y="625" width="510" height="320" rx="10" fill="${CREAM}" class="ln5"/>
+          </g>
+          <g id="b2c">
+            <rect x="325" y="665" width="250" height="40" rx="8" fill="${BLT}" class="ln5"/>
+            <rect x="345" y="830" width="52" height="80" fill="${RD}" class="ln5"/>
+            <rect x="420" y="780" width="52" height="130" fill="${GR}" class="ln5"/>
+            <rect x="495" y="730" width="52" height="180" fill="${BL}" class="ln5"/>
+            <path d="M610 760 L755 760" fill="none" class="ln5"/>
+            <path d="M610 805 L740 805" fill="none" class="ln5"/>
+            <path d="M610 850 L755 850" fill="none" class="ln5"/>
+          </g>`
+        + T("b2h", 540, 1250, "DAH LAMA SIMPAN", "hd", 92));
+
+      // ===== B3: turn it into a video (red) =====
+      add("b3", T("b3t", 540, 430, "Kalau boleh jadikan video...", "tt", 58)
+        + `<g id="b3p">
+            <rect x="380" y="540" width="320" height="610" rx="46" fill="${CARD}" class="ln"/>
+            <rect x="408" y="610" width="264" height="470" rx="12" fill="${CREAM}" class="ln5"/>
+            <path d="M500 575 L580 575" fill="none" class="ln5"/>
+            <circle cx="540" cy="820" r="78" fill="${RD}" class="ln"/>
+            <path d="M518 782 L518 858 L580 820 Z" fill="${CARD}" class="ln5"/>
+            <path d="M432 1035 L648 1035" fill="none" stroke="#d6d0c3" stroke-width="12" stroke-linecap="round"/>
+          </g>
+          <rect id="b3bar" x="426" y="1029" width="12" height="12" rx="6" fill="${RD}"/>
+          <g id="b3k1"><path d="${star(750, 600, 30)}" fill="${RD}" class="ln5"/></g>`
+        + T("b3h", 540, 1330, "SERONOK", "hd", 128) + T("b3i", 540, 1440, "JUGA KAN?", "hd", 76));
+
+      // ===== B4: voice, motion, replay (blue / green / red, green ticks) =====
+      add("b4", `<g id="b4i1">
+            <rect x="195" y="545" width="70" height="125" rx="35" fill="${BL}" class="ln"/>
+            <path d="M168 630 Q168 720 230 720 Q292 720 292 630" fill="none" class="ln"/>
+            <path d="M230 720 L230 758 M196 760 L264 760" fill="none" class="ln"/>
+          </g>
+          <g id="b4i2">
+            <rect x="155" y="840" width="150" height="118" rx="12" fill="${CARD}" class="ln"/>
+            <path d="M165 948 L212 890 L244 928 L266 906 L296 948 Z" fill="${GR}" class="ln5"/>
+            <circle cx="270" cy="872" r="13" fill="${RD}" class="ln5"/>
+            <path d="M112 868 L138 868 M102 899 L138 899 M112 930 L138 930" fill="none" class="ln5"/>
+          </g>
+          <g id="b4i3">
+            <path d="M230 1110 A70 70 0 1 1 169.4 1145" fill="none" class="ln"/>
+            <path d="M150 1122 L168 1148 L198 1138" fill="none" class="ln"/>
+            <path d="M214 1150 L214 1212 L264 1181 Z" fill="${RD}" class="ln5"/>
+          </g>`
+        + `<text id="b4a" x="345" y="675" class="tt" font-size="56">Suara terangkan</text>`
+        + `<text id="b4b" x="345" y="925" class="tt" font-size="56">Gambar bergerak</text>`
+        + `<text id="b4c" x="345" y="1175" class="tt" font-size="56">Tengok semula</text>`
+        + `<text id="b4d" x="345" y="1250" class="tt" font-size="44" ${fillc(GREY)}>lepas kelas</text>`
+        + [650, 900, 1150].map((y, i) => `<g id="b4c${i}"><circle cx="945" cy="${y}" r="38" fill="${GR}" class="ln5"/><path d="M927 ${y} L941 ${y + 15} L965 ${y - 14}" fill="none" stroke="${CARD}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>`).join(""));
+
+      // ===== B5: doing animation yourself -> ALAMAK (red) =====
+      const kf = [[370, 720], [520, 720], [700, 720], [430, 800], [610, 800], [790, 800], [360, 880], [480, 880], [560, 880], [740, 880], [420, 960], [650, 960], [820, 960]];
+      add("b5", T("b5t", 540, 430, "Nak buat animasi sendiri...", "tt", 58)
+        + `<g id="b5w">
+            <rect x="190" y="590" width="700" height="460" rx="20" fill="${CARD}" class="ln"/>
+            <path d="M190 650 L890 650" fill="none" class="ln5"/>
+            <circle cx="232" cy="620" r="9" fill="${RD}" class="ln5"/><circle cx="262" cy="620" r="9" fill="${CREAM}" class="ln5"/><circle cx="292" cy="620" r="9" fill="${CREAM}" class="ln5"/>
+            <path d="M330 720 L860 720 M330 800 L860 800 M330 880 L860 880 M330 960 L860 960" fill="none" stroke="#cfc8b9" stroke-width="5" stroke-linecap="round"/>
+            <rect x="220" y="706" width="80" height="28" rx="6" fill="${RDT}" class="ln5"/><rect x="220" y="786" width="80" height="28" rx="6" fill="${RDT}" class="ln5"/>
+            <rect x="220" y="866" width="80" height="28" rx="6" fill="${RDT}" class="ln5"/><rect x="220" y="946" width="80" height="28" rx="6" fill="${RDT}" class="ln5"/>
+            <path d="M590 676 L590 1020" fill="none" class="ln5"/>
+          </g>`
+        + kf.map(([x, y], i) => `<g id="b5k${i}"><rect x="${x - 13}" y="${y - 13}" width="26" height="26" fill="${RD}" class="ln5" transform="rotate(45 ${x} ${y})"/></g>`).join("")
+        + T("b5h", 540, 1300, "ALAMAK!", "hd", 150, fillc(RD)));
+
+      // ===== B6: no time to learn (purple) =====
+      add("b6", `<g id="b6c">
+            <circle cx="390" cy="600" r="52" fill="${PU}" class="ln"/><circle cx="690" cy="600" r="52" fill="${PU}" class="ln"/>
+            <path d="M420 960 L380 1010 M660 960 L700 1010" fill="none" class="ln"/>
+            <circle cx="540" cy="790" r="205" fill="${CARD}" class="ln"/>
+            ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((i) => { const a = (i / 12) * Math.PI * 2, r1 = i % 3 ? 172 : 160; return `<path d="M${(540 + Math.cos(a) * r1).toFixed(1)} ${(790 + Math.sin(a) * r1).toFixed(1)} L${(540 + Math.cos(a) * 186).toFixed(1)} ${(790 + Math.sin(a) * 186).toFixed(1)}" fill="none" class="ln5"/>`; }).join("")}
+          </g>
+          <g id="b6m"><path d="M540 790 L540 650" fill="none" class="ln"/></g>
+          <g id="b6hh"><path d="M540 790 L630 790" fill="none" class="ln" stroke-width="10"/></g>
+          <g id="b6q1"><text x="835" y="640" class="hd" font-size="110" ${fillc(PU)} stroke="${INK}" stroke-width="6" paint-order="stroke">?</text></g>`
+        + T("b6h", 540, 1220, "BILA MASA", "hd", 120) + T("b6i", 540, 1330, "NAK BELAJAR?", "hd", 78));
+
+      // ===== B7: AI can help (blue) =====
+      add("b7", `<g id="b7st"><path d="${star(540, 760, 230)}" fill="${BL}" class="ln"/></g>
+          <g id="b7k1"><path d="${star(790, 560, 58)}" fill="${PU}" class="ln5"/></g>`
+        + T("b7h", 540, 1200, "AI BOLEH", "hd", 120) + T("b7i", 540, 1340, "BANTU", "hd", 140));
+
+      // ===== B8: the guide + VGC (green) =====
+      add("b8", `<g id="b8b">
+            <rect x="335" y="560" width="430" height="545" rx="18" fill="${CARD}" class="ln"/>
+            <rect x="305" y="535" width="430" height="545" rx="18" fill="${GR}" class="ln"/>
+            <path d="M362 535 L362 1080" fill="none" class="ln"/>
+            <rect x="410" y="625" width="265" height="290" rx="20" fill="${CREAM}" class="ln5"/>
+            <path d="M650 1080 L650 1160 L675 1138 L700 1160 L700 1080" fill="${RD}" class="ln5"/>
+          </g>
+          <g id="b8code"><text x="542" y="800" text-anchor="middle" class="hd" font-size="96">&lt;/&gt;</text></g>
+          <g id="b8logo"><rect x="372" y="602" width="336" height="336" rx="30" fill="#0f1419" class="ln5"/><image href="assets/brand_logo.png" x="372" y="602" width="336" height="336"/></g>
+          <g id="b8k1"><path d="${star(790, 560, 38)}" fill="${GR}" class="ln5"/></g>`
+        + T("b8t", 540, 1250, "Panduan edit video", "tt", 64) + T("b8h", 540, 1385, "NAMA BRAND", "hd", 112));
+
+      // ===== B9: ChatGPT or Claude, from setup to video (blue, green) =====
+      add("b9", T("b9t", 540, 420, "Saya tunjuk cara guna", "tt", 60)
+        + `<g id="b9q1"><path d="M160 540 L470 540 Q510 540 510 580 L510 640 Q510 680 470 680 L230 680 L180 728 L190 680 L160 680 Q120 680 120 640 L120 580 Q120 540 160 540 Z" fill="${GRT}" class="ln"/></g>
+          <g id="b9q2"><path d="M610 540 L920 540 Q960 540 960 580 L960 640 Q960 680 920 680 L890 680 L900 728 L850 680 L610 680 Q570 680 570 640 L570 580 Q570 540 610 540 Z" fill="${BLT}" class="ln"/></g>`
+        + T("b9a", 315, 632, "ChatGPT", "tt", 56) + T("b9b", 765, 632, "Claude", "tt", 56)
+        + `<g id="b9g"><path d="${gear(260, 1000, 92, 118, 8)}" fill="${BL}" class="ln"/><circle cx="260" cy="1000" r="38" fill="${CARD}" class="ln"/></g>
+          <g id="b9ar"><path d="M400 985 Q540 880 680 975" fill="none" class="ln"/><path d="M640 950 L684 978 L638 1004" fill="none" class="ln"/></g>
+          <g id="b9v"><circle cx="820" cy="1000" r="105" fill="${GR}" class="ln"/><path d="M795 955 L795 1045 L866 1000 Z" fill="${CARD}" class="ln5"/></g>`
+        + T("b9c", 260, 1195, "Set up", "tt", 50) + T("b9d", 820, 1195, "Video siap", "tt", 50));
+
+      // ===== B10: no coding? step by step (green) =====
+      add("b10", T("b10t", 540, 420, "Belum pandai koding?", "tt", 62)
+        + `<g id="b10c"><rect x="380" y="510" width="320" height="250" rx="26" fill="${CARD}" class="ln"/><path d="M380 565 L700 565" fill="none" class="ln5"/>
+            <circle cx="415" cy="538" r="8" fill="${GR}" class="ln5"/><circle cx="442" cy="538" r="8" fill="${CREAM}" class="ln5"/></g>
+          <g id="b10x"><text x="540" y="705" text-anchor="middle" class="hd" font-size="84">&lt;/&gt;</text></g>
+          <g id="b10q"><text x="735" y="560" class="hd" font-size="110" ${fillc(GR)} stroke="${INK}" stroke-width="6" paint-order="stroke">?</text></g>
+          <g id="b10s"><path d="M280 1180 L280 1100 L447 1100 L447 1010 L614 1010 L614 920 L800 920 L800 1180 Z" fill="${GR}" class="ln"/></g>`
+        + [[363, 1162, "1"], [530, 1072, "2"], [707, 982, "3"]].map(([x, y, n], i) => `<g id="b10n${i}"><text x="${x}" y="${y}" text-anchor="middle" class="hd" font-size="64" ${fillc(CARD)}>${n}</text></g>`).join("")
+        + T("b10h", 540, 1360, "SATU-SATU", "hd", 120));
+
+      // ===== B11: Prompt Vault (purple) =====
+      add("b11", T("b11t", 540, 400, "Nak mula dengan", "tt", 60) + T("b11u", 540, 482, "prompt apa pun?", "tt", 60)
+        + [[-14, 395, 610], [0, 540, 575], [14, 685, 610]].map(([r, x, y], i) => `<g id="b11p${i}"><g transform="rotate(${r} ${x} ${y})"><rect x="${x - 78}" y="${y - 52}" width="156" height="104" rx="12" fill="${CARD}" class="ln5"/><path d="M${x - 50} ${y - 15} L${x + 50} ${y - 15} M${x - 50} ${y + 15} L${x + 25} ${y + 15}" fill="none" stroke="${INK}" stroke-width="5" stroke-linecap="round"/></g></g>`).join("")
+        + `<g id="b11v">
+            <rect x="285" y="640" width="510" height="440" rx="30" fill="${PU}" class="ln"/>
+            <rect x="325" y="680" width="430" height="360" rx="20" fill="${CARD}" class="ln5"/>
+            <circle cx="540" cy="860" r="96" fill="${PUT}" class="ln"/>
+            <circle cx="540" cy="860" r="30" fill="${CARD}" class="ln5"/>
+            <path d="M540 764 L540 790 M540 930 L540 956 M444 860 L470 860 M610 860 L636 860" fill="none" class="ln5"/>
+            <path d="M700 815 L700 905" fill="none" class="ln"/>
+            <path d="M330 1080 L330 1110 M750 1080 L750 1110" fill="none" class="ln"/>
+          </g>`
+        + T("b11h", 540, 1290, "PROMPT VAULT", "hd", 112));
+
+      // ===== B12: support group (blue, red) =====
+      const person = (x, y, fill) => `<circle cx="${x}" cy="${y}" r="58" fill="${CARD}" class="ln"/><path d="M${x - 100} ${y + 190} Q${x - 100} ${y + 80} ${x} ${y + 80} Q${x + 100} ${y + 80} ${x + 100} ${y + 190} Z" fill="${fill}" class="ln"/>`;
+      add("b12", T("b12t", 540, 430, "Kalau sangkut...", "tt", 62)
+        + `<g id="b12p">${person(540, 800, BL)}${person(285, 850, CARD)}${person(795, 850, CARD)}</g>
+          <g id="b12b1"><circle cx="400" cy="640" r="52" fill="${CARD}" class="ln5"/><text x="400" y="666" text-anchor="middle" class="hd" font-size="70">?</text></g>
+          <g id="b12b2"><circle cx="690" cy="640" r="52" fill="${RD}" class="ln5"/><text x="690" y="666" text-anchor="middle" class="hd" font-size="70" ${fillc(CARD)}>!</text></g>`
+        + T("b12h", 540, 1250, "GROUP SUPPORT", "hd", 88));
+
+      // ===== B13: start with one topic (green) =====
+      add("b13", T("b13t", 540, 430, "Cuba mula dengan", "tt", 62)
+        + `<g id="b13c">
+            <rect x="260" y="560" width="560" height="380" rx="20" fill="${CARD}" class="ln"/>
+            <rect x="300" y="600" width="250" height="56" rx="10" fill="${GRT}" class="ln5"/>
+            <circle cx="320" cy="730" r="10" fill="${INK}"/><circle cx="320" cy="800" r="10" fill="${INK}"/><circle cx="320" cy="870" r="10" fill="${INK}"/>
+            <path d="M350 730 L740 730 M350 800 L700 800 M350 870 L620 870" fill="none" class="ln5"/>
+          </g>
+          <g id="b13l"><text x="425" y="640" text-anchor="middle" class="tt" font-size="34">Topik 1</text></g>
+          <g id="b13k"><path d="${star(800, 575, 56)}" fill="${GR}" class="ln5"/></g>`
+        + T("b13h", 540, 1170, "SATU TOPIK", "hd", 128) + T("b13i", 540, 1270, "yang selalu ajar", "tt", 54, fillc(GREY)));
+
+      // ===== B14: slide -> replayable video (blue -> red) =====
+      add("b14", T("b14t", 540, 430, "Daripada slide biasa...", "tt", 58)
+        + `<g id="b14s"><rect x="140" y="660" width="320" height="220" rx="16" fill="${CARD}" class="ln"/><rect x="170" y="690" width="150" height="34" rx="6" fill="${BL}" class="ln5"/>
+            <path d="M175 770 L420 770 M175 815 L380 815" fill="none" class="ln5"/></g>
+          <g id="b14a"><path d="M480 730 Q540 640 600 730" fill="none" class="ln"/><path d="M566 712 L602 734 L612 694" fill="none" class="ln"/></g>
+          <g id="b14v"><rect x="620" y="660" width="320" height="220" rx="16" fill="${RD}" class="ln"/><circle cx="780" cy="770" r="52" fill="${CARD}" class="ln5"/><path d="M766 744 L766 796 L806 770 Z" fill="${INK}"/></g>
+          <g id="b14r"><path d="M853.6 727.5 A85 85 0 1 1 807.7 689.6" fill="none" stroke="${CARD}" stroke-width="7" stroke-linecap="round"/><path d="M790 676 L808 690 L792 708" fill="none" stroke="${CARD}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></g>`
+        + T("b14c", 300, 950, "Slide", "tt", 48, fillc(GREY)) + T("b14d", 780, 950, "Video", "tt", 48, fillc(GREY))
+        + T("b14h", 540, 1180, "ULANG TAYANG", "hd", 104) + T("b14i", 540, 1285, "bila-bila masa", "tt", 54, fillc(GREY)));
+
+      // ===== B15: CTA (red) =====
+      add("b15", T("b15t", 540, 420, "Nak cuba untuk", "tt", 62) + T("b15u", 540, 505, "kelas sendiri?", "tt", 62)
+        + `<g id="b15b"><path d="M330 640 L750 640 Q840 640 840 730 Q840 820 750 820 L420 820 L330 890 L350 812 Q240 795 240 730 Q240 640 330 640 Z" fill="${RD}" class="ln"/></g>`
+        + T("b15h", 540, 765, "KLIK LINK", "hd", 96, fillc(CARD))
+        + T("b15i", 540, 980, "untuk daftar sekarang", "tt", 56)
+        + `<g id="b15logo"><rect x="365" y="1060" width="350" height="350" rx="32" fill="#0f1419" class="ln5"/><image href="assets/brand_logo.png" x="365" y="1060" width="350" height="350"/></g>
+          <g id="b15k1"><path d="${star(780, 1080, 40)}" fill="${BL}" class="ln5"/></g>`);
+
+      // ---------- landscape: same drawings, re-laid out per board (title top, art left, copy right) ----------
+      const LAYOUT = {
+        b1: { all: ["b1a", "b1b", "b1c", "b1k1"] },
+        b2: { t: ["b2t"], a: ["b2l", "b2c"], c: ["b2h"] },
+        b3: { t: ["b3t"], a: ["b3p", "b3bar", "b3k1"], c: ["b3h", "b3i"] },
+        b4: { all: ["b4i1", "b4i2", "b4i3", "b4a", "b4b", "b4c", "b4d", "b4c0", "b4c1", "b4c2"] },
+        b5: { t: ["b5t"], a: ["b5w", ...kf.map((_, i) => "b5k" + i)], c: ["b5h"] },
+        b6: { a: ["b6c", "b6m", "b6hh", "b6q1"], c: ["b6h", "b6i"] },
+        b7: { a: ["b7st", "b7k1"], c: ["b7h", "b7i"] },
+        b8: { a: ["b8b", "b8code", "b8logo", "b8k1"], c: ["b8t", "b8h"] },
+        b9: { t: ["b9t"], a: ["b9q1", "b9q2", "b9a", "b9b"], c: ["b9g", "b9ar", "b9v", "b9c", "b9d"] },
+        b10: { t: ["b10t"], a: ["b10c", "b10x", "b10q"], c: ["b10s", "b10n0", "b10n1", "b10n2", "b10h"] },
+        b11: { t: ["b11t", "b11u"], a: ["b11p0", "b11p1", "b11p2", "b11v"], c: ["b11h"] },
+        b12: { t: ["b12t"], a: ["b12p", "b12b1", "b12b2"], c: ["b12h"] },
+        b13: { t: ["b13t"], a: ["b13c", "b13l", "b13k"], c: ["b13h", "b13i"] },
+        b14: { t: ["b14t"], a: ["b14s", "b14a", "b14v", "b14r", "b14c", "b14d"], c: ["b14h", "b14i"] },
+        b15: { t: ["b15t", "b15u"], a: ["b15b", "b15h", "b15i"], c: ["b15logo", "b15k1"] },
+      };
+      function wrap(b, ids) {
+        const g = document.createElementNS(NS, "g"); $(b + "_svg").appendChild(g);
+        ids.forEach((id) => g.appendChild($(id))); return g;
+      }
+      // fit a group into a box; text boxes are measured before the webfonts load, so pad their width
+      function fit(g, x0, y0, x1, y1, smax) {
+        const bb = g.getBBox(), bw = bb.width * (g.querySelector("text.hd") ? 1.14 : 1.04);
+        const s = Math.min(smax, (x1 - x0) / bw, (y1 - y0) / bb.height);
+        const tx = (x0 + x1) / 2 - s * (bb.x + bb.width / 2), ty = (y0 + y1) / 2 - s * (bb.y + bb.height / 2);
+        g.setAttribute("transform", `translate(${tx.toFixed(1)} ${ty.toFixed(1)}) scale(${s.toFixed(4)})`);
+      }
+      if (LAND) Object.entries(LAYOUT).forEach(([b, r]) => {
+        const top = r.t ? 300 : 170;
+        if (r.t) wrap(b, r.t).setAttribute("transform", `translate(${W / 2 - 540} -238)`);
+        if (r.all) fit(wrap(b, r.all), W * 0.12, 170, W * 0.88, 910, 1);
+        if (r.a) fit(wrap(b, r.a), W * 0.08, top, W * 0.48, 930, 1);
+        if (r.c) fit(wrap(b, r.c), W * 0.54, top, W * 0.92, 930, 1);
+      });
+
+      // ---------- pen-driven actions (all positions in world coords) ----------
+      const GEOM = "path,rect,circle,ellipse,line,polyline,polygon";
+      const bOf = (el) => +el.closest(".board").dataset.i;
+      const pt = (el, ox, x, y) => { const m = el.getCTM(); return [ox + m.a * x + m.c * y + m.e, m.b * x + m.d * y + m.f]; };
+      const E = (p) => 0.5 - 0.5 * Math.cos(Math.PI * Math.min(1, Math.max(0, p))); // sine in-out
+      // write a text element left -> right; clip in the text's own bbox units, pen reads getBBox per frame
+      function write(id, t0, dur) {
+        const el = $(id), ox = bOf(el) * W, defs = el.ownerSVGElement.querySelector("defs");
+        const cp = document.createElementNS(NS, "clipPath"); cp.id = "cp_" + id; cp.setAttribute("clipPathUnits", "objectBoundingBox");
+        const r = document.createElementNS(NS, "rect");
+        r.setAttribute("x", -0.03); r.setAttribute("y", -0.6); r.setAttribute("height", 2.2); r.setAttribute("width", 0);
+        cp.appendChild(r); defs.appendChild(cp); el.setAttribute("clip-path", `url(#cp_${id})`);
+        tl.fromTo(r, { attr: { width: 0 } }, { attr: { width: 1.06 }, duration: dur, ease: "none" }, t0);
+        const n = Math.max(3, el.textContent.length * 0.55);
+        SEGS.push({ t0, t1: t0 + dur, b: bOf(el), f: (p) => { const b = el.getBBox(); return pt(el, ox, b.x + p * b.width, b.y + b.height * 0.58 + Math.sin(p * n * Math.PI) * b.height * 0.1); } });
+      }
+      // marker highlight (accent tint) under a text element
+      function hl(id, t0, dur, col) {
+        const el = $(id), ox = bOf(el) * W, r = document.createElementNS(NS, "rect");
+        r.setAttribute("width", 0); r.setAttribute("rx", 8); r.setAttribute("fill", col);
+        el.parentNode.insertBefore(r, el);
+        const geo = () => { const b = el.getBBox(); return { x: b.x - 16, y: b.y + b.height * 0.5, w: b.width + 32, h: b.height * 0.36 }; };
+        const pr = { p: 0 };
+        tl.fromTo(pr, { p: 0 }, { p: 1, duration: dur, ease: "none", onUpdate: () => { const g = geo(); r.setAttribute("x", g.x); r.setAttribute("y", g.y); r.setAttribute("height", g.h); r.setAttribute("width", g.w * pr.p); } }, t0);
+        SEGS.push({ t0, t1: t0 + dur, b: bOf(el), f: (p) => { const g = geo(); return pt(el, ox, g.x + p * g.w, g.y + g.h * 0.55); } });
+      }
+      // draw every outline in a group in order, pen following the stroke; fills wash in behind it
+      function draw(id, t0, dur) {
+        const g = $(id), ox = bOf(g) * W;
+        const els = [...g.querySelectorAll(GEOM)].filter((e) => e.getAttribute("stroke") || e.classList.contains("ln") || e.classList.contains("ln5"));
+        const fillOnly = [...g.querySelectorAll(GEOM + ",text,image")].filter((e) => !els.includes(e));
+        const L = els.map((e) => e.getTotalLength()), tot = L.reduce((a, b) => a + b, 0);
+        const gap = 0.09, avail = dur - gap * (els.length - 1);
+        let t = t0;
+        els.forEach((e, i) => {
+          const d = Math.max(0.05, (avail * L[i]) / tot), len = L[i] + 2;
+          e.style.strokeDasharray = `${len} ${len}`;
+          tl.fromTo(e, { strokeDashoffset: len }, { strokeDashoffset: 0, duration: d, ease: "power1.inOut" }, t);
+          tl.fromTo(e, { strokeOpacity: 0 }, { strokeOpacity: 1, duration: 0.02, ease: "none" }, t);
+          const f = e.getAttribute("fill");
+          if (f && f !== "none") tl.fromTo(e, { fillOpacity: 0 }, { fillOpacity: 1, duration: 0.35, ease: "sine.out" }, t + d * 0.6);
+          const m = e.getCTM(), pts = [];
+          for (let k = 0; k <= 40; k++) { const q = e.getPointAtLength((L[i] * k) / 40); pts.push([ox + m.a * q.x + m.c * q.y + m.e, m.b * q.x + m.d * q.y + m.f]); }
+          const ease = gsap.parseEase("power1.inOut");
+          SEGS.push({ t0: t, t1: t + d, b: bOf(g), f: (p) => { const u = ease(p) * 40, k = Math.min(39, Math.floor(u)), a = u - k; return [pts[k][0] + (pts[k + 1][0] - pts[k][0]) * a, pts[k][1] + (pts[k + 1][1] - pts[k][1]) * a]; } });
+          t += d + gap;
+        });
+        fillOnly.forEach((e) => tl.fromTo(e, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "sine.out" }, t0 + dur - 0.1));
+      }
+      // soft appear for stickers, ticks, logo (no bounce)
+      function pop(id, t0, s0) {
+        tl.fromTo($(id), { scale: s0 == null ? 0.7 : s0, opacity: 0, transformOrigin: "50% 50%" }, { scale: 1, opacity: 1, duration: 0.55, ease: "power3.out" }, t0);
+      }
+
+      // B1 0 - 3.15
+      write("b1a", 0.05, 0.55); write("b1b", 0.92, 0.62); write("b1c", 1.93, 0.48); hl("b1c", 2.45, 0.2, BLT); pop("b1k1", 0.75);
+      // B2 3.15 - 6.29
+      write("b2t", 3.15, 0.7); draw("b2l", 3.9, 0.7); draw("b2c", 4.62, 0.38); write("b2h", 5.02, 0.43); hl("b2h", 5.47, 0.16, BLT);
+      // B3 6.29 - 10.12
+      write("b3t", 6.32, 0.88); draw("b3p", 7.25, 0.75);
+      tl.fromTo($("b3bar"), { attr: { width: 12 } }, { attr: { width: 222 }, duration: 2.0, ease: "none" }, 8.05);
+      tl.fromTo($("b3bar"), { opacity: 0 }, { opacity: 1, duration: 0.2 }, 8.0);
+      write("b3h", 8.45, 0.45); write("b3i", 8.95, 0.3); hl("b3h", 9.27, 0.2, RDT); pop("b3k1", 8.1);
+      // B4 10.12 - 16.30
+      draw("b4i1", 10.15, 0.6); write("b4a", 10.82, 0.75); pop("b4c0", 11.62);
+      draw("b4i2", 12.1, 0.55); write("b4b", 12.7, 0.6); pop("b4c1", 13.32);
+      draw("b4i3", 13.42, 0.55); write("b4c", 14.02, 0.6); write("b4d", 15.15, 0.38); pop("b4c2", 15.6);
+      // B5 16.30 - 20.93
+      write("b5t", 16.35, 1.0); draw("b5w", 17.42, 1.1);
+      kf.forEach((_, i) => pop("b5k" + i, 18.55 + i * 0.08, 0.6));
+      write("b5h", 19.99, 0.36);
+      // B6 20.93 - 23.40
+      draw("b6c", 20.96, 0.62); draw("b6m", 21.6, 0.05); draw("b6hh", 21.66, 0.04);
+      tl.fromTo($("b6m"), { rotation: 0 }, { rotation: 360, transformOrigin: "50% 100%", duration: 1.6, ease: "sine.inOut" }, 21.72);
+      tl.fromTo($("b6hh"), { rotation: 0 }, { rotation: 30, transformOrigin: "0% 50%", duration: 1.6, ease: "sine.inOut" }, 21.72);
+      pop("b6q1", 21.8);
+      write("b6h", 21.72, 0.42); write("b6i", 22.16, 0.36); hl("b6h", 22.54, 0.2, PUT);
+      // B7 23.40 - 25.95
+      draw("b7st", 23.45, 0.55); pop("b7k1", 23.95);
+      write("b7h", 24.1, 0.5); write("b7i", 24.88, 0.3); hl("b7i", 25.2, 0.12, BLT);
+      // B8 25.95 - 30.70
+      draw("b8b", 26.0, 0.95); pop("b8code", 26.95, 0.85); write("b8t", 27.0, 0.9); write("b8h", 28.0, 0.55); hl("b8h", 28.58, 0.25, GRT);
+      pop("b8logo", 29.33, 0.85); pop("b8k1", 29.5);
+      // B9 30.70 - 37.45
+      write("b9t", 30.72, 0.73); draw("b9q1", 31.5, 0.4); write("b9a", 31.92, 0.33);
+      draw("b9q2", 32.65, 0.4); write("b9b", 33.07, 0.32);
+      draw("b9g", 33.95, 0.5); write("b9c", 34.48, 0.28); draw("b9ar", 34.82, 0.4);
+      draw("b9v", 35.3, 0.48); write("b9d", 35.84, 0.42);
+      tl.to($("b9g"), { rotation: 60, transformOrigin: "50% 50%", duration: 2.6, ease: "none", immediateRender: false }, 34.5);
+      // B10 37.45 - 40.75
+      write("b10t", 37.5, 0.75); draw("b10c", 38.3, 0.36); pop("b10x", 38.62, 0.85); pop("b10q", 38.7);
+      draw("b10s", 38.8, 0.55); pop("b10n0", 39.42, 0.8); pop("b10n1", 39.58, 0.8); pop("b10n2", 39.74, 0.8);
+      write("b10h", 39.42, 0.5); hl("b10h", 39.95, 0.2, GRT);
+      // B11 40.75 - 44.97
+      write("b11t", 40.8, 0.5); write("b11u", 41.35, 0.55); draw("b11v", 41.98, 0.85);
+      [0, 1, 2].forEach((i) => tl.fromTo($("b11p" + i), { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" }, 42.9 + i * 0.14));
+      write("b11h", 43.55, 0.6); hl("b11h", 44.18, 0.25, PUT);
+      // B12 44.97 - 47.90
+      write("b12t", 45.02, 0.55); draw("b12p", 45.6, 0.7); pop("b12b1", 45.98); pop("b12b2", 46.4);
+      write("b12h", 46.6, 0.55); hl("b12h", 47.17, 0.22, BLT);
+      // B13 47.90 - 51.27
+      write("b13t", 47.95, 0.6); draw("b13c", 48.6, 0.62); pop("b13l", 49.1, 0.85); pop("b13k", 49.22);
+      write("b13h", 49.3, 0.55); hl("b13h", 49.88, 0.25, GRT); write("b13i", 50.2, 0.55);
+      // B14 51.27 - 56.60
+      write("b14t", 51.32, 0.85); draw("b14s", 52.2, 0.5); write("b14c", 52.72, 0.22);
+      draw("b14a", 53.2, 0.38); draw("b14v", 53.62, 0.5); write("b14d", 54.16, 0.24);
+      tl.fromTo($("b14r"), { opacity: 0, rotation: -40, transformOrigin: "50% 50%" }, { opacity: 1, rotation: 0, transformOrigin: "50% 50%", duration: 0.6, ease: "power2.out" }, 55.35);
+      write("b14h", 54.5, 0.62); hl("b14h", 55.4, 0.25, RDT); write("b14i", 55.68, 0.34);
+      // B15 56.60 - end
+      write("b15t", 56.65, 0.62); write("b15u", 57.3, 0.62); draw("b15b", 58.0, 0.5); write("b15h", 58.55, 0.5);
+      write("b15i", 59.12, 0.75); pop("b15logo", 60.05, 0.85); pop("b15k1", 60.3);
+
+      // ---------- continuity: the pen never lifts between boards ----------
+      // During each pan it draws one flowing line from the last stroke of a board into the first stroke of the next.
+      SEGS.sort((a, b) => a.t0 - b.t0);
+      const PANS = []; // [t0, t1, fromIndex]
+      for (let i = 1; i < BOARDS.length; i++) {
+        const prev = SEGS.filter((s) => s.b === i - 1), next = SEGS.filter((s) => s.b === i);
+        const last = prev.reduce((a, s) => (s.t1 > a.t1 ? s : a)), first = next[0];
+        const t0 = Math.max(last.t1 + 0.04, BOARDS[i][1] - 0.75), t1 = first.t0;
+        PANS.push([t0, Math.min(t1, BOARDS[i][1]), i - 1]);
+        const path = document.createElementNS(NS, "path");
+        path.setAttribute("fill", "none"); path.setAttribute("stroke", BOARDS[i][2]); path.setAttribute("stroke-width", 6);
+        path.setAttribute("stroke-linecap", "round"); path.setAttribute("opacity", 0.85);
+        $("thread").appendChild(path);
+        const geo = () => {
+          const A = last.f(1), B = first.f(0);
+          path.setAttribute("d", `M${A[0].toFixed(1)} ${A[1].toFixed(1)} C${(A[0] + 240).toFixed(1)} ${(A[1] + 90).toFixed(1)} ${(B[0] - 300).toFixed(1)} ${B[1].toFixed(1)} ${B[0].toFixed(1)} ${B[1].toFixed(1)}`);
+          return path.getTotalLength();
+        };
+        const pr = { p: 0 };
+        tl.fromTo(pr, { p: 0 }, { p: 1, duration: t1 - t0, ease: "none", onUpdate: () => { const L = geo(); path.style.strokeDasharray = `${L} ${L}`; path.style.strokeDashoffset = L * (1 - E(pr.p)); } }, t0);
+        // the thread is only there to carry the eye across; it fades once the new board is in
+        tl.fromTo(path, { opacity: 0.85 }, { opacity: 0, duration: 0.8, ease: "sine.inOut", immediateRender: false }, t1 + 0.7);
+        SEGS.push({ t0, t1, b: -1, f: (p) => { const L = geo(), q = path.getPointAtLength(L * E(p)); return [q.x, q.y]; } });
+      }
+      SEGS.sort((a, b) => a.t0 - b.t0);
+      function camAt(t) {
+        let x = 0;
+        for (const [a, b, i] of PANS) { if (t >= b) x = (i + 1) * W; else if (t > a) { x = (i + E((t - a) / (b - a))) * W; break; } else break; }
+        return x;
+      }
+
+      // ---------- the drawing hand: glides, rests low-right when idle, never pops in/out mid-video ----------
+      const world = $("world"), hand = $("hand");
+      const REST = LAND ? [W - 130, 900] : [960, 1640], OFF = LAND ? [W + 320, H + 380] : [1300, 2280];
+      const lerp = (a, b, k) => [a[0] + (b[0] - a[0]) * k, a[1] + (b[1] - a[1]) * k];
+      const S = (k) => { k = Math.min(1, Math.max(0, k)); return k * k * k * (k * (k * 6 - 15) + 10); };
+      function handAt(t, cx) {
+        const rest = [REST[0] + cx, REST[1]], off = [OFF[0] + cx, OFF[1]];
+        let i = -1;
+        for (let j = 0; j < SEGS.length; j++) { if (SEGS[j].t0 <= t) i = j; else break; }
+        const pv = SEGS[i], nx = SEGS[i + 1];
+        if (pv && t <= pv.t1) return pv.f(Math.min(1, Math.max(0, (t - pv.t0) / (pv.t1 - pv.t0))));
+        if (!pv) return lerp(off, nx.f(0), S((t - (nx.t0 - 0.7)) / 0.7));
+        const pe = pv.f(1);
+        if (!nx) return lerp(pe, off, S((t - pv.t1) / 0.9));
+        const ns = nx.f(0), g = nx.t0 - pv.t1;
+        if (g <= 1.4) return lerp(pe, ns, S((t - pv.t1) / g));
+        if (t < pv.t1 + 0.6) return lerp(pe, rest, S((t - pv.t1) / 0.6));
+        if (t > nx.t0 - 0.6) return lerp(rest, ns, S((t - (nx.t0 - 0.6)) / 0.6));
+        return rest;
+      }
+      const place = (t) => {
+        const cx = camAt(t), p = handAt(t, cx);
+        world.style.transform = `translate(${(-cx).toFixed(2)}px, 0px)`;
+        hand.style.transform = `translate(${(p[0] - cx).toFixed(1)}px, ${p[1].toFixed(1)}px)`;
+      };
+      const clock = { t: 0 };
+      tl.to(clock, { t: DUR, duration: DUR, ease: "none", onUpdate: () => place(clock.t) }, 0);
+      place(0);
+      window.__PANS = PANS;
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

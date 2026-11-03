@@ -1,0 +1,714 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Break Pattern Ad</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --paper: #f2eee6;
+        --paper2: #e6e0d2;
+        --ink: #14171f;
+        --navy: #1b2236;
+        --navy2: #252f4a;
+        --char: #171a21;
+        --must: #e09827;
+        --must2: #f0b64a;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #171a21; }
+      body { font-family: "JetBrains Mono", monospace; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; }
+      .scene { position: absolute; inset: 0; overflow: hidden; }
+      .abs { position: absolute; }
+      .bg { position: absolute; inset: 0; }
+      .bg-paper { background-color: var(--paper); background-image: radial-gradient(rgba(20,23,31,.11) 2.2px, transparent 2.6px); background-size: 46px 46px; }
+      .bg-navy { background-color: var(--navy); background-image: radial-gradient(rgba(255,255,255,.07) 2.2px, transparent 2.6px); background-size: 46px 46px; }
+      .bg-char { background-color: var(--char); background-image: radial-gradient(rgba(255,255,255,.05) 2.2px, transparent 2.6px); background-size: 46px 46px; }
+      .bg-must { background-color: var(--must); background-image: radial-gradient(rgba(20,23,31,.16) 2.4px, transparent 2.8px); background-size: 46px 46px; }
+      .disp { font-family: "Archivo Black", sans-serif; letter-spacing: -0.03em; line-height: .92; text-transform: uppercase; white-space: nowrap; }
+      .mono { font-family: "JetBrains Mono", monospace; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
+      .card { background: var(--paper); border: 4px solid var(--ink); border-radius: 24px; box-shadow: 10px 10px 0 var(--ink); overflow: hidden; }
+      .chip { display: inline-block; font: 700 34px "JetBrains Mono", monospace; background: var(--ink); color: var(--paper); padding: 6px 16px 5px; border-radius: 12px; letter-spacing: .06em; }
+      .chip.m { background: var(--must); color: var(--ink); }
+      .strip { display: inline-block; padding: .06em .2em .0em; background: var(--must); color: var(--ink); box-shadow: 8px 8px 0 var(--ink); }
+      .strip.ink { background: var(--ink); color: var(--paper); box-shadow: 8px 8px 0 var(--must); }
+      .strip.paper { background: var(--paper); color: var(--ink); box-shadow: 8px 8px 0 var(--must); }
+      .char { position: absolute; filter: drop-shadow(0 22px 22px rgba(0,0,0,.28)); }
+      .ghost-ink { color: rgba(20,23,31,.075); }
+      .ghost-pap { color: rgba(242,238,230,.07); }
+      .blob { border-radius: 50%; background: var(--must); }
+      .phd { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px 10px; border-bottom: 4px solid var(--ink); background: var(--paper2); }
+      .dots { display: inline-block; width: 70px; height: 16px; background: radial-gradient(var(--ink) 6px, transparent 6.5px) 0 0/24px 16px repeat-x; }
+      .fcard { position: absolute; left: 0; top: 0; width: 360px; background: var(--paper); border: 4px solid var(--ink); border-radius: 18px; padding: 8px 8px 0; box-shadow: 8px 8px 0 var(--ink); }
+      .fcard img { display: block; width: 100%; height: 190px; object-fit: cover; object-position: 50% 28%; border-radius: 10px; }
+      .fcard b { display: block; font: 700 22px "JetBrains Mono", monospace; padding: 7px 4px 8px; text-transform: uppercase; letter-spacing: .04em; color: var(--ink); }
+      .tile { position: absolute; background: var(--paper); border: 4px solid var(--ink); border-radius: 18px; box-shadow: 8px 8px 0 var(--ink); }
+      .pill { display: inline-flex; align-items: center; gap: 12px; padding: 10px 22px 9px; border: 4px solid var(--ink); border-radius: 999px; font: 700 34px "JetBrains Mono", monospace; letter-spacing: .02em; }
+      .node { position: absolute; left: 580px; width: 450px; }
+      .node .lbl { position: absolute; left: 18px; top: -26px; z-index: 6; }
+      .calcell { position: absolute; width: 118px; height: 118px; border: 4px solid rgba(242,238,230,.35); border-radius: 18px; }
+      .tick { position: absolute; width: 118px; height: 118px; border-radius: 18px; background: var(--must); border: 4px solid var(--ink); display: flex; align-items: center; justify-content: center; }
+      svg { overflow: visible; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-width="1080" data-height="1920" data-duration="62.26">
+
+      <!-- =========================== S1 · GALERI / FOOTAGE (0 – 5.8) · paper =========================== -->
+      <section id="s1" class="clip scene" data-start="0" data-duration="5.8" data-layout-allow-overflow>
+        <div class="bg bg-paper"></div>
+        <div id="s1-ghost" data-layout-ignore class="disp abs ghost-ink" style="left:34px;top:190px;font-size:250px">GALERI</div>
+        <div id="s1-blob" class="abs blob" style="left:20px;top:790px;width:760px;height:760px"></div>
+        <img id="s1-char" class="char" src="assets/char/shoot.png" style="left:10px;top:590px;width:820px" alt="" />
+        <div id="s1-gal" class="abs card" style="left:430px;top:250px;width:570px;height:800px">
+          <div class="phd"><span class="chip m">GALERI</span><span class="chip">VIDEO</span></div>
+          <div id="s1-galgrid" style="position:absolute;left:18px;right:18px;top:100px;bottom:18px"></div>
+        </div>
+        <div id="s1-cards"></div>
+        <div id="s1-folder" data-layout-allow-overlap class="abs" style="left:470px;top:1320px;width:570px;height:437px">
+          <svg viewBox="0 0 560 430" width="570" height="437">
+            <path d="M20 60 q0-40 40-40 h150 q22 0 34 18 l14 22 h262 q40 0 40 40 v290 q0 40 -40 40 H60 q-40 0 -40 -40z" fill="#b97a12" stroke="#14171f" stroke-width="6"/>
+            <rect x="60" y="62" width="430" height="240" rx="14" fill="#f2eee6" stroke="#14171f" stroke-width="5" transform="rotate(-3 270 180)"/>
+            <rect x="84" y="86" width="380" height="14" rx="6" fill="#14171f" opacity=".25" transform="rotate(-3 270 180)"/>
+            <path d="M10 134 h540 v250 q0 40 -40 40 H50 q-40 0 -40 -40z" fill="#e09827" stroke="#14171f" stroke-width="6"/>
+            <rect x="96" y="218" width="368" height="116" rx="10" fill="#f2eee6" stroke="#14171f" stroke-width="5"/>
+            <text data-layout-allow-overlap x="280" y="296" text-anchor="middle" font-family="Archivo Black" font-size="76" fill="#14171f">NAK EDIT</text>
+          </svg>
+        </div>
+        <div id="s1-cal" class="abs card" style="left:760px;top:1000px;width:235px;height:270px;border-radius:20px">
+          <div style="height:62px;background:var(--must);border-bottom:4px solid var(--ink);display:flex;justify-content:center;align-items:center;gap:90px">
+            <i style="width:16px;height:16px;border-radius:50%;background:var(--ink);display:block"></i><i style="width:16px;height:16px;border-radius:50%;background:var(--ink);display:block"></i>
+          </div>
+          <div id="s1-days" style="position:relative;height:200px"></div>
+        </div>
+        <div id="s1-t1" class="abs disp strip" style="left:80px;top:215px;font-size:120px;transform-origin:left center">TAK SEMPAT</div>
+        <div id="s1-t2" class="abs disp strip ink" style="left:80px;top:360px;font-size:200px;transform-origin:left center">EDIT.</div>
+      </section>
+
+      <!-- =========================== S2/S3 · KERJA EDITING PENUH (5.8 – 13.9) · navy =========================== -->
+      <section id="s2" class="clip scene" data-start="5.8" data-duration="8.1" data-layout-allow-overflow>
+        <div class="bg bg-navy"></div>
+        <div id="s2-ghost" data-layout-ignore class="disp abs ghost-pap" style="left:20px;top:1180px;font-size:330px">EDIT</div>
+        <img id="s2-char" class="char" src="assets/char/serabut.png" style="left:-30px;top:790px;width:760px" alt="" />
+
+        <div id="s2-p1" class="abs card" style="left:50px;top:170px;width:620px;height:360px">
+          <div class="phd"><span class="chip m">POTONG</span><i class="dots"></i></div>
+          <div style="position:absolute;left:0;right:0;top:92px;bottom:0">
+            <div class="abs" style="left:22px;top:16px;width:572px;height:46px;background:var(--paper2);border-radius:10px"></div>
+            <div id="s2-c1" class="abs" style="left:26px;top:20px;width:196px;height:38px;border-radius:8px;background:var(--must);border:3px solid var(--ink);transform-origin:left center"></div>
+            <div id="s2-c1b" class="abs" style="left:226px;top:20px;width:120px;height:38px;border-radius:8px;background:var(--must);border:3px solid var(--ink)"></div>
+            <div id="s2-c2" class="abs" style="left:350px;top:20px;width:236px;height:38px;border-radius:8px;background:var(--ink);transform-origin:left center"></div>
+            <div class="abs" style="left:22px;top:80px;width:572px;height:46px;background:var(--paper2);border-radius:10px"></div>
+            <div id="s2-c3" class="abs" style="left:86px;top:84px;width:270px;height:38px;border-radius:8px;background:var(--navy2);transform-origin:left center"></div>
+            <div id="s2-c4" class="abs" style="left:366px;top:84px;width:216px;height:38px;border-radius:8px;background:var(--must2);border:3px solid var(--ink);transform-origin:left center"></div>
+            <div class="abs" style="left:22px;top:144px;width:572px;height:46px;background:var(--paper2);border-radius:10px"></div>
+            <div id="s2-c5" class="abs" style="left:26px;top:152px;width:560px;height:30px;border-radius:8px;background:repeating-linear-gradient(90deg,var(--ink) 0 6px,transparent 6px 12px);opacity:.55;transform-origin:left center"></div>
+            <div id="s2-ph" class="abs" style="left:34px;top:-6px;width:8px;height:210px;background:var(--must);border:2px solid var(--ink);border-radius:4px"></div>
+            <svg id="s2-sc" class="abs" style="left:176px;top:150px" width="90" height="90" viewBox="0 0 90 90">
+              <g fill="none" stroke="#14171f" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="22" cy="68" r="12" fill="#e09827"/><circle cx="68" cy="68" r="12" fill="#e09827"/>
+                <path d="M28 58 L62 12"/><path d="M62 58 L28 12"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div id="s2-p2" class="abs card" style="left:620px;top:440px;width:410px;height:300px">
+          <div class="phd"><span class="chip m">SUBTITLE</span><span class="chip">CC</span></div>
+          <div style="position:absolute;left:22px;top:104px;right:22px">
+            <div id="s2-cap1" style="width:330px;height:44px;border-radius:10px;background:var(--ink);margin-bottom:16px;transform-origin:left center;position:relative"><i style="position:absolute;left:150px;top:7px;width:96px;height:30px;border-radius:6px;background:var(--must);display:block"></i></div>
+            <div id="s2-cap2" style="width:250px;height:44px;border-radius:10px;background:var(--ink);margin-bottom:16px;transform-origin:left center;position:relative"><i style="position:absolute;left:18px;top:7px;width:80px;height:30px;border-radius:6px;background:var(--must);display:block"></i></div>
+            <div id="s2-cap3" style="width:300px;height:44px;border-radius:10px;background:var(--ink);transform-origin:left center"></div>
+          </div>
+        </div>
+
+        <div id="s2-p3" class="abs card" style="left:600px;top:770px;width:440px;height:400px">
+          <div class="phd"><span class="chip m">B-ROLL</span><span class="chip">MP4</span></div>
+          <div id="s2-bgrid" style="position:absolute;left:18px;right:18px;top:100px;bottom:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div class="bt" style="background:#cfe0e8;border:3px solid var(--ink);border-radius:12px;overflow:hidden"><svg viewBox="0 0 190 130" width="100%" height="100%"><circle cx="140" cy="38" r="20" fill="#e09827"/><path d="M0 130 L50 60 L95 110 L135 70 L190 130Z" fill="#14171f"/></svg></div>
+            <div class="bt" style="background:var(--paper2);border:3px solid var(--ink);border-radius:12px;overflow:hidden"><svg viewBox="0 0 190 130" width="100%" height="100%"><rect x="14" y="50" width="30" height="80" fill="#14171f"/><rect x="52" y="24" width="38" height="106" fill="#252f4a"/><rect x="98" y="62" width="30" height="68" fill="#14171f"/><rect x="136" y="38" width="40" height="92" fill="#e09827"/></svg></div>
+            <div class="bt" style="background:var(--must2);border:3px solid var(--ink);border-radius:12px;overflow:hidden"><svg viewBox="0 0 190 130" width="100%" height="100%"><path d="M0 80 q24-30 48 0 t48 0 t48 0 t48 0 V130 H0Z" fill="#14171f"/><path d="M0 100 q24-26 48 0 t48 0 t48 0 t48 0 V130 H0Z" fill="#252f4a"/></svg></div>
+            <div id="s2-btsel" class="bt" style="background:#d9e2c8;border:3px solid var(--ink);border-radius:12px;overflow:hidden"><svg viewBox="0 0 190 130" width="100%" height="100%"><rect x="88" y="70" width="14" height="60" fill="#14171f"/><circle cx="95" cy="52" r="34" fill="#14171f"/><circle cx="70" cy="68" r="22" fill="#252f4a"/><circle cx="122" cy="68" r="22" fill="#252f4a"/></svg></div>
+          </div>
+          <svg id="s2-mag" class="abs" style="left:40px;top:120px" width="110" height="110" viewBox="0 0 110 110">
+            <circle cx="44" cy="44" r="30" fill="rgba(242,238,230,.55)" stroke="#14171f" stroke-width="8"/>
+            <path d="M66 66 L98 98" stroke="#14171f" stroke-width="14" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <div id="s2-p4" class="abs card" style="left:490px;top:1190px;width:520px;height:420px">
+          <div class="phd"><span class="chip m">VISUAL</span><span class="chip">PNG</span></div>
+          <div class="abs" style="left:20px;top:104px;width:230px;height:290px;border:4px solid var(--ink);border-radius:14px;background:#cfe0e8;overflow:hidden">
+            <svg viewBox="0 0 230 290" width="100%" height="100%"><circle cx="160" cy="70" r="30" fill="#e09827"/><path d="M0 290 V190 L60 120 L110 180 L160 130 L230 200 V290Z" fill="#252f4a"/><path d="M0 290 V230 L70 190 L130 240 L190 200 L230 240 V290Z" fill="#14171f"/></svg>
+          </div>
+          <div id="s2-sw" class="abs" style="left:272px;top:108px;width:226px">
+            <i class="sw" style="display:inline-block;width:98px;height:70px;border-radius:12px;border:4px solid var(--ink);background:var(--must);margin:0 10px 12px 0"></i><i class="sw" style="display:inline-block;width:98px;height:70px;border-radius:12px;border:4px solid var(--ink);background:var(--navy);margin:0 0 12px 0"></i>
+            <i class="sw" style="display:inline-block;width:98px;height:70px;border-radius:12px;border:4px solid var(--ink);background:var(--paper2);margin:0 10px 12px 0"></i><i class="sw" style="display:inline-block;width:98px;height:70px;border-radius:12px;border:4px solid var(--ink);background:var(--must2);margin:0 0 12px 0"></i>
+          </div>
+          <div id="s2-aa" class="disp abs" style="left:278px;top:300px;font-size:104px;text-transform:none">Aa</div>
+        </div>
+
+        <div id="s2-p5" class="abs card" style="left:70px;top:540px;width:480px;height:270px">
+          <div class="phd"><span class="chip m">MUSIC</span>
+            <svg width="40" height="40" viewBox="0 0 40 40"><path d="M14 30 V8 L34 4 V26" fill="none" stroke="#14171f" stroke-width="5"/><circle cx="10" cy="31" r="6" fill="#14171f"/><circle cx="30" cy="27" r="6" fill="#14171f"/></svg>
+          </div>
+          <div id="s2-wave" style="position:absolute;left:22px;right:22px;top:108px;bottom:22px;display:flex;align-items:center;justify-content:space-between"></div>
+        </div>
+
+        <div id="s2-p6" class="abs card" style="left:540px;top:1612px;width:500px;height:190px">
+          <div class="phd" style="padding:8px 14px"><span class="chip m" style="font-size:30px">SFX</span></div>
+          <div style="position:absolute;left:18px;right:18px;top:78px;display:flex;gap:14px">
+            <span class="pill" style="font-size:28px;background:var(--must);padding:8px 16px">BOOM</span><span class="pill" style="font-size:28px;background:var(--paper2);padding:8px 16px">POP</span><span class="pill" style="font-size:28px;background:var(--must2);padding:8px 16px">ZAP</span>
+          </div>
+        </div>
+
+        <svg id="s2-scr1" class="abs" style="left:70px;top:850px" width="170" height="90" viewBox="0 0 170 90"><path d="M6 70 L30 14 L52 66 L76 12 L98 64 L122 14 L146 66 L164 20" fill="none" stroke="#e09827" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg id="s2-scr2" class="abs" style="left:440px;top:1060px" width="150" height="90" viewBox="0 0 150 90"><path d="M6 20 L40 70 L62 14 L92 72 L114 18 L144 62" fill="none" stroke="#e09827" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </section>
+
+      <!-- =========================== S4 · 3 JAM (13.9 – 16.9) · paper, lapang =========================== -->
+      <section id="s4" class="clip scene" data-start="13.9" data-duration="3.0" data-layout-allow-overflow>
+        <div class="bg bg-paper"></div>
+        <svg id="s4-rays" class="abs" style="left:140px;top:240px" width="800" height="800" viewBox="-400 -400 800 800">
+          <g fill="#e09827" opacity=".95"></g>
+        </svg>
+        <svg id="s4-clock" class="abs" style="left:240px;top:340px" width="600" height="600" viewBox="-300 -300 600 600">
+          <circle r="270" fill="#f2eee6" stroke="#14171f" stroke-width="16"/>
+          <g id="s4-ticks" stroke="#14171f" stroke-width="10" stroke-linecap="round"></g>
+          <line id="s4-hh" x1="0" y1="0" x2="0" y2="-130" stroke="#14171f" stroke-width="22" stroke-linecap="round"/>
+          <line id="s4-mh" x1="0" y1="0" x2="0" y2="-200" stroke="#14171f" stroke-width="13" stroke-linecap="round"/>
+          <circle r="24" fill="#e09827" stroke="#14171f" stroke-width="8"/>
+        </svg>
+        <div id="s4-big" class="disp abs" style="left:0;width:1080px;top:1010px;text-align:center;font-size:310px">
+          <span id="s4-3" style="display:inline-block;color:var(--must);-webkit-text-stroke:10px var(--ink);paint-order:stroke fill;margin-right:34px">3</span><span id="s4-jam" style="display:inline-block">JAM</span>
+        </div>
+        <div id="s4-dep" class="mono abs" style="left:0;width:1080px;top:1370px;text-align:center;font-size:52px">DEPAN</div>
+        <div id="s4-lap" class="abs" style="left:300px;top:1450px;width:480px;height:300px">
+          <svg viewBox="0 0 480 300" width="480" height="300">
+            <rect x="60" y="10" width="360" height="220" rx="18" fill="#252f4a" stroke="#14171f" stroke-width="8"/>
+            <rect x="82" y="32" width="316" height="176" rx="8" fill="#f2eee6"/>
+            <rect x="98" y="60" width="150" height="26" rx="6" fill="#e09827"/><rect x="258" y="60" width="124" height="26" rx="6" fill="#14171f"/>
+            <rect x="98" y="102" width="200" height="26" rx="6" fill="#14171f"/><rect x="308" y="102" width="74" height="26" rx="6" fill="#e09827"/>
+            <rect x="98" y="144" width="284" height="26" rx="6" fill="#d9d2c0"/>
+            <path d="M20 236 H460 L440 276 Q436 286 424 286 H56 Q44 286 40 276Z" fill="#e09827" stroke="#14171f" stroke-width="8"/>
+          </svg>
+        </div>
+      </section>
+
+      <!-- =========================== S5 · PENAT (16.9 – 21.0) · charcoal, quiet =========================== -->
+      <section id="s5" class="clip scene" data-start="16.9" data-duration="4.1" data-layout-allow-overflow>
+        <div class="bg bg-char"></div>
+        <div id="s5-stage" class="abs" style="left:0;top:0;width:1080px;height:1920px">
+          <div id="s5-blob" class="abs blob" style="left:130px;top:760px;width:820px;height:820px;background:var(--navy2)"></div>
+          <img id="s5-char" class="char" src="assets/char/penat.png" style="left:70px;top:440px;width:940px;filter:drop-shadow(0 22px 26px rgba(0,0,0,.5)) brightness(.9)" alt="" />
+        </div>
+        <div id="s5-prog" class="abs card" style="left:90px;top:170px;width:900px;height:200px;background:var(--navy);border-color:var(--paper);box-shadow:10px 10px 0 var(--must)">
+          <div class="mono" style="position:absolute;left:34px;top:24px;font-size:40px;color:var(--paper)">EXPORT</div>
+          <div class="mono" style="position:absolute;right:34px;top:24px;font-size:40px;color:var(--must)">STUCK…</div>
+          <div style="position:absolute;left:34px;right:34px;top:100px;height:56px;border:4px solid var(--paper);border-radius:14px;overflow:hidden">
+            <div id="s5-fill" style="width:100%;height:100%;background:var(--must);transform-origin:left center"></div>
+          </div>
+        </div>
+        <div id="s5-post" class="abs" style="left:760px;top:600px">
+          <span class="pill" style="background:#3a4155;color:#8f97ab;border-color:#8f97ab;font-size:46px;padding:16px 34px 14px">POST</span>
+        </div>
+        <div id="s5-big" class="disp abs" style="left:70px;top:190px;font-size:170px;color:var(--must);line-height:.9">TAK<br />LARAT.</div>
+        <div class="abs" style="inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 55%, transparent 52%, rgba(0,0,0,.55) 100%)"></div>
+      </section>
+
+      <!-- =========================== S6a · PANDUAN VIDEO GUNA CODE (21.0 – 23.65) · mustard =========================== -->
+      <section id="s6a" class="clip scene" data-start="21.0" data-duration="2.65" data-layout-allow-overflow>
+        <div class="bg bg-must"></div>
+        <div id="s6a-lbl" class="mono abs" style="left:76px;top:190px;font-size:58px;color:var(--ink)">DALAM PANDUAN</div>
+        <div id="s6a-l1" class="disp abs" style="left:66px;top:262px;font-size:236px;color:var(--ink);transform-origin:left center">NAMA</div>
+        <div id="s6a-l2" class="disp abs" style="left:66px;top:470px;font-size:236px;color:var(--paper);-webkit-text-stroke:0;transform-origin:left center">BRAND</div>
+        <div id="s6a-l3" class="disp abs" style="left:66px;top:678px;font-size:236px;color:var(--ink);transform-origin:left center">ANDA<span id="s6a-cur" style="color:var(--paper)">_</span></div>
+        <img id="s6a-char" class="char" src="assets/char/presenter.png" style="left:370px;top:900px;width:700px" alt="" />
+      </section>
+
+      <!-- =========================== S6b · VGC + WORKFLOW (23.65 – 32.5) · paper =========================== -->
+      <section id="s6b" class="clip scene" data-start="23.65" data-duration="8.85" data-layout-allow-overflow>
+        <div class="bg bg-paper"></div>
+        <img id="s6b-char" class="char" src="assets/char/presenter.png" style="left:-110px;top:830px;width:700px" alt="" />
+        <div id="s6b-bel" class="disp abs" style="left:270px;top:190px;font-size:118px"><span class="strip">BELAJAR</span></div>
+
+        <div id="n-a" class="node" style="top:380px;height:210px">
+                    <div class="card" style="position:absolute;inset:0;border-radius:22px">
+            <div class="abs" style="left:20px;top:44px;width:200px;height:132px;border:4px solid var(--ink);border-radius:12px;overflow:hidden"><img src="assets/footage/clip_05.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 25%" alt="" /></div>
+            <div class="abs" style="left:240px;top:44px;width:186px;height:132px;border:4px solid var(--ink);border-radius:12px;background:var(--paper2);padding:16px 16px">
+              <div style="height:14px;border-radius:7px;background:var(--ink);margin-bottom:12px"></div><div style="height:14px;width:70%;border-radius:7px;background:var(--ink);margin-bottom:12px"></div><div style="height:14px;width:84%;border-radius:7px;background:var(--must)"></div>
+            </div>
+          </div>
+          <span class="chip m lbl">FOOTAGE + BRIEF</span>
+        </div>
+        <svg id="a-ab" class="abs" style="left:780px;top:598px" width="50" height="46" viewBox="0 0 50 46"><path d="M25 2 V34 M10 24 L25 40 L40 24" fill="none" stroke="#14171f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <div id="n-b" class="node" style="top:660px;height:250px">
+          <span class="chip m lbl">AI</span>
+          <div class="card" style="position:absolute;inset:0;border-radius:22px;background:var(--navy);border-color:var(--ink)">
+            <div class="disp" style="position:absolute;left:24px;top:32px;font-size:60px;color:var(--must)">AUTOMATE</div>
+            <div id="b-gpt" class="pill" style="position:absolute;left:24px;top:150px;background:var(--paper);font-size:34px">ChatGPT</div>
+            <div id="b-cl" class="pill" style="position:absolute;left:236px;top:150px;background:var(--must);font-size:34px">Claude</div>
+          </div>
+        </div>
+        <svg id="a-bc" class="abs" style="left:780px;top:918px" width="50" height="46" viewBox="0 0 50 46"><path d="M25 2 V34 M10 24 L25 40 L40 24" fill="none" stroke="#14171f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <div id="n-c" class="node" style="top:980px;height:220px">
+          <span class="chip m lbl">PREVIEW</span>
+          <div class="card" style="position:absolute;inset:0;border-radius:22px">
+            <div class="abs" style="left:22px;top:30px;width:240px;height:134px;border:4px solid var(--ink);border-radius:12px;background:var(--navy);overflow:hidden"><img src="assets/footage/clip_12.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 22%" alt="" /></div>
+            <svg class="abs" style="left:112px;top:66px" width="60" height="60" viewBox="0 0 60 60"><circle cx="30" cy="30" r="28" fill="#f2eee6" stroke="#14171f" stroke-width="5"/><path d="M24 17 L44 30 L24 43Z" fill="#14171f"/></svg>
+            <div class="abs" style="left:22px;top:180px;width:240px;height:12px;border-radius:6px;background:var(--paper2);border:2px solid var(--ink)"><i style="display:block;width:62%;height:100%;background:var(--must);border-radius:5px"></i></div>
+            <div class="mono abs" style="left:286px;top:60px;font-size:34px;line-height:1.25">MP4<br />V1</div>
+          </div>
+        </div>
+        <svg id="a-cd" class="abs" style="left:780px;top:1208px" width="50" height="46" viewBox="0 0 50 46"><path d="M25 2 V34 M10 24 L25 40 L40 24" fill="none" stroke="#14171f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <div id="n-d" class="node" style="top:1270px;height:190px">
+          <span class="chip m lbl">SEMAK</span>
+          <div class="card" style="position:absolute;inset:0;border-radius:22px">
+            <div class="abs" style="left:24px;top:30px;right:24px">
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px"><i class="ck" style="width:30px;height:30px;border-radius:8px;background:var(--must);border:4px solid var(--ink);display:block"></i><b style="flex:1;height:16px;border-radius:8px;background:var(--ink);display:block"></b></div>
+              <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px"><i class="ck" style="width:30px;height:30px;border-radius:8px;background:var(--must);border:4px solid var(--ink);display:block"></i><b style="width:70%;height:16px;border-radius:8px;background:var(--ink);display:block"></b></div>
+              <div style="display:flex;align-items:center;gap:14px"><i style="width:30px;height:30px;border-radius:8px;background:var(--paper2);border:4px solid var(--ink);display:block"></i><b style="width:84%;height:16px;border-radius:8px;background:var(--paper2);display:block;border:2px solid var(--ink)"></b></div>
+            </div>
+          </div>
+        </div>
+        <svg id="a-de" class="abs" style="left:780px;top:1468px" width="50" height="46" viewBox="0 0 50 46"><path d="M25 2 V34 M10 24 L25 40 L40 24" fill="none" stroke="#14171f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <div id="n-e" class="node" style="top:1530px;height:160px">
+          <span class="chip m lbl">BETULKAN</span>
+          <div class="card" style="position:absolute;inset:0;border-radius:22px;background:var(--must)">
+            <svg class="abs" style="left:26px;top:34px" width="90" height="90" viewBox="0 0 90 90"><path d="M64 10 a22 22 0 0 0 -28 28 L8 66 a10 10 0 0 0 16 16 L52 54 a22 22 0 0 0 28 -28 L64 42 L50 36 L46 22Z" fill="#14171f"/></svg>
+            <div class="disp abs" style="left:128px;top:50px;font-size:54px;color:var(--ink)">V2 ✓</div>
+          </div>
+        </div>
+        <svg id="a-loop" class="abs" style="left:996px;top:1010px;height:640px" width="64" height="640" viewBox="0 0 64 640"><path d="M4 600 H40 Q56 600 56 584 V90 Q56 74 40 74 H8" fill="none" stroke="#14171f" stroke-width="8" stroke-linecap="round" stroke-dasharray="1200" stroke-dashoffset="1200"/><path id="a-loophead" d="M26 56 L6 74 L26 92" fill="none" stroke="#14171f" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <div id="vgc-tile" class="abs" style="left:280px;top:520px;width:520px;height:520px;border-radius:120px;background:var(--navy);border:6px solid var(--ink);box-shadow:14px 14px 0 var(--must);display:flex;align-items:center;justify-content:center">
+          <img src="assets/ui/brand_icon.png" style="width:430px;height:430px;object-fit:contain" alt="Logo" />
+        </div>
+        <div id="vgc-ring1" class="abs" style="left:280px;top:520px;width:520px;height:520px;border-radius:120px;border:10px solid var(--must)"></div>
+        <div id="vgc-ring2" class="abs" style="left:280px;top:520px;width:520px;height:520px;border-radius:120px;border:6px solid var(--ink)"></div>
+      </section>
+
+      <!-- =========================== S7 · CAMPAK / TIDUR / SIAP (32.5 – 35.45) =========================== -->
+      <section id="s7" class="clip scene" data-start="32.5" data-duration="2.95" data-layout-allow-overflow>
+        <div id="s7a" class="abs" style="inset:0">
+          <div class="bg bg-navy"></div>
+          <div id="s7-t1" class="disp abs strip" style="left:80px;top:200px;font-size:160px;transform-origin:left center">CAMPAK</div>
+          <div id="s7-t2" class="disp abs strip paper" style="left:80px;top:400px;font-size:148px;transform-origin:left center">FOOTAGE</div>
+          <div id="s7-ai" class="abs" style="left:560px;top:860px;width:440px;height:440px;border-radius:70px;background:var(--must);border:6px solid var(--paper);box-shadow:14px 14px 0 var(--paper2);display:flex;align-items:center;justify-content:center">
+            <div class="disp" style="font-size:230px;color:var(--ink)">AI</div>
+          </div>
+          <div id="s7-throw"></div>
+        </div>
+        <div id="s7b" class="abs" style="inset:0">
+          <div class="bg" style="background:#0f121a"></div>
+          <div id="s7-moon" class="abs" style="left:700px;top:230px;width:260px;height:260px;border-radius:50%;background:var(--must2);overflow:hidden"><i style="position:absolute;left:-70px;top:-30px;width:250px;height:250px;border-radius:50%;background:#0f121a;display:block"></i></div>
+          <div id="s7-stars"></div>
+          <img id="s7-char" class="char" src="assets/char/penat.png" style="left:150px;top:640px;width:820px;filter:drop-shadow(0 20px 26px rgba(0,0,0,.6)) brightness(.78)" alt="" />
+          <div id="s7-tidur" class="disp abs" style="left:60px;top:200px;font-size:210px;color:var(--paper)">TIDUR</div>
+          <div id="s7-z1" class="disp abs" style="left:770px;top:690px;font-size:150px;color:var(--must)">Z</div>
+          <div id="s7-z2" class="disp abs" style="left:840px;top:600px;font-size:110px;color:var(--must)">Z</div>
+          <div id="s7-z3" class="disp abs" style="left:890px;top:530px;font-size:80px;color:var(--must)">Z</div>
+        </div>
+        <div id="s7c" class="abs" style="inset:0">
+          <div class="bg bg-paper"></div>
+          <div id="s7-disc" class="abs" style="left:340px;top:330px;width:400px;height:400px;border-radius:50%;background:var(--must);border:10px solid var(--ink);box-shadow:16px 16px 0 var(--ink);display:flex;align-items:center;justify-content:center">
+            <svg width="250" height="200" viewBox="0 0 250 200"><path d="M24 104 L96 172 L228 26" fill="none" stroke="#14171f" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div id="s7-siap" class="disp abs" style="left:0;width:1080px;top:830px;text-align:center;font-size:330px;color:var(--ink)">SIAP.</div>
+          <div id="s7-bar" class="abs" style="left:110px;top:1260px;width:860px;height:76px;border:6px solid var(--ink);border-radius:20px;background:var(--paper2);overflow:hidden;box-shadow:8px 8px 0 var(--ink)"><div id="s7-barfill" style="width:100%;height:100%;background:var(--must);transform-origin:left center"></div></div>
+        </div>
+      </section>
+
+      <!-- =========================== S8 · DEMO BEFORE/AFTER (35.45 – 46.95) · charcoal =========================== -->
+      <section id="s8" class="clip scene" data-start="35.45" data-duration="11.5" data-layout-allow-overflow>
+        <div class="bg bg-char"></div>
+        <div id="s8-top1" class="mono abs" style="left:86px;top:190px;font-size:46px;color:var(--must)">DARIPADA</div>
+        <div id="s8-top2" class="disp abs" style="left:80px;top:232px;font-size:190px;color:var(--paper);transform-origin:left center">RAW<span style="color:var(--must)">.</span></div>
+        <div id="s8-b1" class="disp abs" style="left:86px;top:1478px;font-size:108px;color:var(--must);transform-origin:left center">TERUS</div>
+        <div id="s8-b2" class="disp abs" style="left:580px;top:1478px;font-size:108px;color:var(--paper);transform-origin:left center">JADI</div>
+        <div id="s8-b3" class="disp abs" style="left:80px;top:1590px;font-size:176px;color:var(--paper);transform-origin:left center">VIDEO<span style="color:var(--must)">.</span></div>
+      </section>
+      <video id="demo" class="clip" src="assets/video/casestudy.mp4" muted playsinline data-start="35.45" data-media-start="16.7" data-duration="11.5" data-track-index="3"
+        style="position:absolute;left:0;top:0;width:1008px;height:1008px;border:6px solid var(--paper);border-radius:28px;box-shadow:0 0 0 6px var(--ink),14px 14px 0 6px var(--must);object-fit:cover"></video>
+
+      <!-- =========================== S9 · TUTORIAL / TEMPLATE / GROUP SUPPORT (46.95 – 51.1) · paper =========================== -->
+      <section id="s9" class="clip scene" data-start="46.95" data-duration="4.15" data-layout-allow-overflow>
+        <div class="bg bg-paper"></div>
+        <div id="s9-ada" class="disp abs" style="left:80px;top:215px;font-size:170px;color:var(--ink)">ADA</div>
+        <div id="s9-w1" class="disp abs strip" style="left:80px;top:395px;font-size:150px;transform-origin:left center">TUTORIAL</div>
+        <div id="s9-w2" class="disp abs strip ink" style="left:80px;top:395px;font-size:128px;transform-origin:left center">TEMPLATE</div>
+        <div id="s9-w3" class="disp abs strip" style="left:80px;top:395px;font-size:112px;transform-origin:left center;line-height:1">GROUP<br />SUPPORT</div>
+        <div id="s9-k1" class="abs" style="left:34px;top:670px;width:420px;height:737px;transform-origin:50% 100%"><div style="position:absolute;inset:0;border:8px solid var(--ink);border-radius:30px;box-shadow:12px 12px 0 var(--must);overflow:hidden;background:#0b1118"><img src="assets/ui/card_zero.png" style="width:100%;height:100%;object-fit:cover" alt="Zero to Expert" /></div></div>
+        <div id="s9-k2" class="abs" style="left:330px;top:850px;width:420px;height:737px;transform-origin:50% 100%"><div style="position:absolute;inset:0;border:8px solid var(--ink);border-radius:30px;box-shadow:12px 12px 0 var(--ink);overflow:hidden;background:#0b1118"><img src="assets/ui/card_vault.png" style="width:100%;height:100%;object-fit:cover" alt="Produk" /></div></div>
+        <div id="s9-k3" class="abs" style="left:626px;top:700px;width:420px;height:737px;transform-origin:50% 100%"><div style="position:absolute;inset:0;border:8px solid var(--ink);border-radius:30px;box-shadow:12px 12px 0 var(--must);overflow:hidden;background:#0b1118"><img src="assets/ui/card_belajar.png" style="width:100%;height:100%;object-fit:cover" alt="Belajar Bersama" /></div></div>
+      </section>
+
+      <!-- =========================== S10 · BASIC -> EXPERT (51.1 – 55.6) · mustard =========================== -->
+      <section id="s10" class="clip scene" data-start="51.1" data-duration="4.5" data-layout-allow-overflow>
+        <div class="bg bg-must"></div>
+        <div id="s10-ghost" data-layout-ignore class="disp abs" style="left:20px;top:250px;font-size:300px;color:rgba(20,23,31,.09)">ZERO</div>
+        <div id="st1" class="abs" style="left:0;top:1560px;width:360px;height:420px;background:var(--navy);border:6px solid var(--ink);border-radius:20px 20px 0 0;box-shadow:10px 0 0 var(--ink);transform-origin:50% 100%">
+          <div id="st1-l" class="disp" style="position:absolute;left:90px;top:34px;font-size:60px;color:var(--paper)">BASIC</div></div>
+        <div id="st2" class="abs" style="left:350px;top:1330px;width:350px;height:650px;background:var(--navy2);border:6px solid var(--ink);border-radius:20px 20px 0 0;box-shadow:10px 0 0 var(--ink);transform-origin:50% 100%">
+          <div id="st2-l" class="disp" style="position:absolute;left:24px;top:34px;font-size:56px;color:var(--paper)">ADVANCE</div></div>
+        <div id="st3" class="abs" style="left:690px;top:1100px;width:450px;height:880px;background:var(--ink);border:6px solid var(--paper);border-radius:20px 20px 0 0;transform-origin:50% 100%">
+          <div id="st3-l" class="disp" style="position:absolute;left:26px;top:36px;font-size:64px;color:var(--must)">EXPERT</div></div>
+        <img id="s10-char" class="char" src="assets/char/presenter.png" style="left:-120px;top:676px;width:614px;transform-origin:50% 98%" alt="" />
+        <div id="s10-conf"></div>
+      </section>
+
+      <!-- =========================== S11 · CTA (55.6 – 62.26) · navy =========================== -->
+      <section id="s11" class="clip scene" data-start="55.6" data-duration="6.66" data-layout-allow-overflow>
+        <div class="bg bg-navy"></div>
+        <div id="s11a">
+          <div id="s11-nm" class="mono abs" style="left:86px;top:200px;font-size:56px;color:var(--must)">NAK MULA</div>
+          <div id="s11-post" class="disp abs" style="left:80px;top:262px;font-size:186px;color:var(--paper);transform-origin:left center">POSTING</div>
+          <div id="s11-hh" class="disp abs" style="left:80px;top:440px;font-size:146px;color:var(--must);transform-origin:left center">HARI-HARI?</div>
+          <div id="s11-cal" class="abs" style="left:0;top:760px;width:1080px;height:900px"></div>
+        </div>
+        <div id="s11b">
+          <img id="s11-logo" class="abs" src="assets/ui/brand_wordmark.png" style="left:70px;top:170px;width:460px" alt="Logo" />
+          <div id="s11-k" class="disp abs" style="left:80px;top:450px;font-size:150px;color:var(--paper);transform-origin:left center">KLIK LINK.</div>
+          <div id="s11-d1" class="disp abs strip" style="left:80px;top:600px;font-size:132px;transform-origin:left center">DAFTAR</div>
+          <div id="s11-d2" class="disp abs strip ink" style="left:80px;top:735px;font-size:132px;transform-origin:left center">SEKARANG.</div>
+          <div id="s11-btn" class="abs" style="left:540px;top:1160px">
+            <span class="pill" style="background:var(--must);font-size:52px;padding:22px 40px 20px;box-shadow:10px 10px 0 var(--paper);border-color:var(--paper)">KLIK LINK →</span>
+          </div>
+          <svg id="s11-cur" class="abs" style="left:770px;top:1235px" width="90" height="110" viewBox="0 0 90 110"><path d="M10 6 L10 88 L30 70 L44 102 L58 96 L44 64 L72 64Z" fill="#f2eee6" stroke="#14171f" stroke-width="6" stroke-linejoin="round"/></svg>
+          <div id="s11-ring" class="abs" style="left:752px;top:1215px;width:60px;height:60px;border-radius:50%;border:8px solid var(--must)"></div>
+          <img id="s11-char" class="char" src="assets/char/presenter.png" style="left:-110px;top:900px;width:680px" alt="" />
+        </div>
+      </section>
+
+      <!-- global overlays -->
+      <div id="wipe" class="abs" style="left:0;top:0;width:1080px;height:1920px;background:var(--must);z-index:50;opacity:0"></div>
+      <div id="flash" class="abs" style="left:0;top:0;width:1080px;height:1920px;background:var(--paper);z-index:51;opacity:0"></div>
+
+      <audio id="mix" src="assets/audio/mix.wav" data-start="0" data-duration="62.26" data-track-index="10" data-volume="1"></audio>
+    </div>
+
+    <script>
+      /* ------------------------------------------------------------------ helpers */
+      const $ = (s) => document.querySelector(s);
+      const mk = (tag, cls, css, html) => { const e = document.createElement(tag); if (cls) e.className = cls; if (css) Object.assign(e.style, css); if (html != null) e.innerHTML = html; return e; };
+      const prng = (a) => () => { a |= 0; a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+      const R = prng(20261011);
+      const tl = gsap.timeline({ paused: true });
+
+      const pop = (t, tg, o = {}) => tl.fromTo(tg, { opacity: 0, scale: o.s0 ?? 0.5, rotation: (o.rot || 0) + (o.dr ?? -8), y: o.y0 ?? 30 }, { opacity: 1, scale: 1, rotation: o.rot || 0, y: 0, duration: o.dur ?? 0.42, ease: o.ease ?? "back.out(1.8)" }, t);
+      const slam = (t, tg, o = {}) => tl.fromTo(tg, { opacity: 0, scale: o.s0 ?? 2.1, rotation: (o.rot || 0) + (o.dr ?? 0) }, { opacity: 1, scale: 1, rotation: o.rot || 0, duration: o.dur ?? 0.3, ease: "power4.out" }, t);
+      const slide = (t, tg, dx, dy, o = {}) => tl.fromTo(tg, { opacity: 0, x: dx, y: dy }, { opacity: 1, x: 0, y: 0, duration: o.dur ?? 0.45, ease: o.ease ?? "power3.out" }, t);
+      const gone = (t, tg, o = {}) => tl.to(tg, { opacity: 0, scale: o.scale ?? 0.9, y: o.y ?? 0, duration: o.dur ?? 0.2, ease: "power2.in" }, t);
+      const wob = (t0, t1, tg, amp, per, prop = "rotation") => { let k = 0; for (let t = t0; t < t1 - 0.01; t += per, k++) tl.to(tg, { [prop]: (k % 2 ? -amp : amp), duration: per, ease: "sine.inOut" }, t); };
+
+      /* ------------------------------------------------------------------ S1 · galeri → footage menimbun → NAK EDIT */
+      (() => {
+        const grid = $("#s1-galgrid"); const thumbs = [];
+        for (let i = 0; i < 12; i++) {
+          const n = 1 + ((i * 5 + 3) % 30);
+          const d = mk("div", "", { position: "absolute", left: 6 + (i % 3) * 178 + "px", top: 6 + Math.floor(i / 3) * 168 + "px", width: "162px", height: "154px", border: "4px solid #14171f", borderRadius: "12px", overflow: "hidden", background: "#ddd" });
+          d.innerHTML = `<img src="assets/footage/clip_${String(n).padStart(2, "0")}.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 22%" alt="">`;
+          grid.appendChild(d); thumbs.push(d);
+        }
+        const box = $("#s1-cards"); const cards = [];
+        for (let i = 0; i < 16; i++) {
+          const n = 1 + ((i * 7 + 1) % 30);
+          const c = mk("div", "fcard", null, `<img src="assets/footage/clip_${String(n).padStart(2, "0")}.jpg" alt=""><b data-layout-allow-overlap>MVI_${String(300 + Math.floor(R() * 600))}.MP4</b>`);
+          c.id = "fc" + i; c.setAttribute("data-layout-allow-overlap", ""); box.appendChild(c); cards.push(c);
+        }
+        const rest = [[560,170,-6],[700,330,5],[420,430,-9],[640,540,7],[760,730,-4],[470,650,3],[560,880,-8],[700,1000,6],[380,930,-3],[620,1140,-5],[740,1250,8],[460,1190,4],[30,1560,-7],[250,1630,6],[110,1370,-4],[780,1490,-9]];
+        const days = ["ISNIN", "SELASA", "RABU", "KHAMIS", "JUMAAT"]; const dEls = [];
+        days.forEach((d) => { const e = mk("div", "disp", { position: "absolute", left: 0, right: 0, top: "52px", textAlign: "center", fontSize: "50px" }, d); $("#s1-days").appendChild(e); dEls.push(e); });
+
+        /* opening frame is already full: char + blob + ghost word */
+        tl.fromTo("#s1-blob", { scale: 0.85, opacity: 1 }, { scale: 1, opacity: 1, duration: 0.5, ease: "back.out(1.4)" }, 0);
+        tl.fromTo("#s1-char", { y: 40, scale: 1.06, opacity: 1 }, { y: 0, scale: 1, opacity: 1, duration: 0.5, ease: "power3.out" }, 0);
+        tl.fromTo("#s1-ghost", { x: -60, opacity: 1 }, { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" }, 0);
+        tl.to("#s1-char", { y: -10, rotation: 1.2, duration: 1.4, ease: "sine.inOut" }, 0.55);
+        tl.to("#s1-char", { y: 0, rotation: -0.6, duration: 1.4, ease: "sine.inOut" }, 1.95);
+        /* "dekat galeri" → panel pops from the phone */
+        tl.fromTo("#s1-gal", { opacity: 0, scale: 0.15, x: -330, y: 340, rotation: -10 }, { opacity: 1, scale: 1, x: 0, y: 0, rotation: 4, duration: 0.55, ease: "back.out(1.5)" }, 1.22);
+        thumbs.forEach((th, i) => tl.fromTo(th, { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, 1.55 + i * 0.045));
+        /* "berapa banyak footage" → cards burst out in three batches */
+        const burst = (idx, t, st) => idx.forEach((i, k) => {
+          const [x, y, r] = rest[i];
+          tl.fromTo(cards[i], { x: 575, y: 515, scale: 0.2, rotation: 0, opacity: 0 }, { x, y, scale: 1, rotation: r, opacity: 1, duration: 0.5, ease: "back.out(1.25)" }, t + k * st);
+        });
+        burst([0, 1, 2, 3, 4], 2.36, 0.06); burst([5, 6, 7, 8, 9], 2.66, 0.06); burst([10, 11, 12, 13, 14, 15], 3.05, 0.05);
+        tl.to("#s1-gal", { opacity: 0.0, duration: 0.2 }, 3.5);
+        /* "yang tak sempat nak edit" → folder drops, cards sucked in, calendar flips, big text */
+        tl.fromTo("#s1-folder", { y: -2300, rotation: -8, opacity: 1 }, { y: 0, rotation: 0, duration: 0.5, ease: "bounce.out" }, 3.3);
+        slam(3.78, "#s1-t1", { s0: 1.7, rot: -3 });
+        tl.fromTo("#s1-cal", { opacity: 0, scale: 0.4, rotation: -14 }, { opacity: 1, scale: 1, rotation: -5, duration: 0.4, ease: "back.out(1.8)" }, 3.9);
+        dEls.forEach((e, i) => { const a = 4.0 + i * 0.16; tl.fromTo(e, { opacity: 0, scaleY: 0.1 }, { opacity: 1, scaleY: 1, duration: 0.12, ease: "power2.out" }, a); if (i < dEls.length - 1) tl.to(e, { opacity: 0, scaleY: 0.1, duration: 0.08 }, a + 0.14); });
+        cards.forEach((c, i) => tl.to(c, { x: 580, y: 1420, scale: 0.26, rotation: (i % 2 ? 40 : -40), opacity: 0, duration: 0.42, ease: "power2.in" }, 3.98 + i * 0.026));
+        tl.to("#s1-folder", { scaleY: 1.1, scaleX: 1.04, duration: 0.14, yoyo: true, repeat: 1, ease: "power2.out", transformOrigin: "50% 100%" }, 4.42);
+        slam(4.42, "#s1-t2", { s0: 2.0, rot: 2 });
+        wob(4.75, 5.55, "#s1-t2", 1.6, 0.16);
+        wob(4.75, 5.55, "#s1-folder", 1.2, 0.2);
+        tl.to("#s1-blob", { scale: 1.05, duration: 1.4, ease: "sine.inOut" }, 3.6);
+      })();
+
+      /* ------------------------------------------------------------------ S2/S3 · kerja editing penuh (global time = 5.8 + local) */
+      (() => {
+        const wave = $("#s2-wave"); const bars = [];
+        for (let i = 0; i < 22; i++) { const b = mk("i", "", { display: "block", width: "12px", height: 24 + Math.round(R() * 100) + "px", background: i % 5 === 2 ? "#e09827" : "#14171f", borderRadius: "6px", transformOrigin: "50% 50%" }); wave.appendChild(b); bars.push(b); }
+        tl.fromTo("#s2-ghost", { x: 140, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: "power2.out" }, 5.8);
+        tl.fromTo("#s2-char", { y: 200, scale: 0.9, opacity: 0, rotation: 3 }, { y: 0, scale: 1, opacity: 1, rotation: 0, duration: 0.5, ease: "back.out(1.4)" }, 5.8);
+        wob(6.3, 13.8, "#s2-char", 1.4, 0.34);
+        /* potong video */
+        pop(6.05, "#s2-p1", { rot: -3 });
+        tl.fromTo(["#s2-c1", "#s2-c1b", "#s2-c2", "#s2-c3", "#s2-c4", "#s2-c5"], { scaleX: 0 }, { scaleX: 1, duration: 0.3, stagger: 0.05, ease: "power3.out" }, 6.2);
+        tl.fromTo("#s2-ph", { x: 0 }, { x: 214, duration: 0.7, ease: "power1.inOut" }, 6.3);
+        tl.fromTo("#s2-sc", { opacity: 0, x: 0, y: 30 }, { opacity: 1, x: 0, y: 0, duration: 0.2 }, 6.7);
+        tl.to("#s2-sc", { x: 36, duration: 0.3, ease: "power1.inOut" }, 6.95); /* scissors follow playhead */
+        tl.to("#s2-c1b", { x: 30, y: 14, rotation: 7, duration: 0.18, ease: "power3.out" }, 7.0);
+        tl.to("#s2-sc", { scaleY: 0.5, duration: 0.07, yoyo: true, repeat: 3, ease: "none", transformOrigin: "50% 50%" }, 7.0);
+        /* letak subtitle */
+        pop(7.3, "#s2-p2", { rot: 3 });
+        tl.fromTo(["#s2-cap1", "#s2-cap2", "#s2-cap3"], { scaleX: 0 }, { scaleX: 1, duration: 0.28, stagger: 0.12, ease: "power3.out" }, 7.62);
+        /* cari b-roll */
+        pop(8.4, "#s2-p3", { rot: -2 });
+        tl.fromTo("#s2-bgrid .bt", { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.25, stagger: 0.08, ease: "back.out(2)" }, 8.6);
+        tl.fromTo("#s2-mag", { opacity: 0, x: 0, y: 0 }, { opacity: 1, x: 0, y: 0, duration: 0.15 }, 8.75);
+        tl.to("#s2-mag", { x: 200, y: 0, duration: 0.3, ease: "power1.inOut" }, 8.9);
+        tl.to("#s2-mag", { x: 20, y: 130, duration: 0.3, ease: "power1.inOut" }, 9.2);
+        tl.to("#s2-mag", { x: 210, y: 134, duration: 0.3, ease: "power1.inOut" }, 9.5);
+        tl.to("#s2-btsel", { scale: 1.07, duration: 0.2, ease: "back.out(2)" }, 9.82);
+        /* cari visual */
+        pop(9.46, "#s2-p4", { rot: 2 });
+        tl.fromTo("#s2-sw .sw", { scale: 0 }, { scale: 1, duration: 0.25, stagger: 0.07, ease: "back.out(2.2)" }, 9.85);
+        slam(10.15, "#s2-aa", { s0: 1.6 });
+        /* belum masuk music / sound effect */
+        pop(11.3, "#s2-p5", { rot: -4 });
+        bars.forEach((b, i) => { tl.fromTo(b, { scaleY: 0.15 }, { scaleY: 1, duration: 0.2, ease: "power2.out" }, 11.5 + i * 0.012); });
+        bars.forEach((b, i) => { for (let k = 0; k < 6; k++) tl.to(b, { scaleY: 0.25 + ((i * 7 + k * 5) % 10) / 12, duration: 0.17, ease: "sine.inOut" }, 11.8 + k * 0.17 + (i % 4) * 0.01); });
+        pop(12.3, "#s2-p6", { rot: 2 });
+        /* panic accents */
+        const sc1 = "#s2-scr1", sc2 = "#s2-scr2";
+        tl.fromTo(sc1, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)" }, 7.4);
+        tl.fromTo(sc2, { opacity: 0, scale: 0.4 }, { opacity: 1, scale: 1, duration: 0.2, ease: "back.out(2)" }, 9.5);
+        wob(7.7, 13.8, sc1, 6, 0.22); wob(9.8, 13.8, sc2, -6, 0.22);
+        tl.to("#s2-ghost", { x: -60, duration: 7, ease: "none" }, 6.6);
+        /* overload shake before cut */
+        tl.to(["#s2-p1", "#s2-p2", "#s2-p3", "#s2-p4"], { x: (i) => (i % 2 ? 7 : -7), duration: 0.07, yoyo: true, repeat: 5, ease: "none" }, 13.2);
+      })();
+
+      /* ------------------------------------------------------------------ S4 · 3 JAM (13.9 – 16.9) */
+      (() => {
+        const ticks = $("#s4-ticks"); const NS = "http://www.w3.org/2000/svg";
+        for (let i = 0; i < 12; i++) { const a = (i * Math.PI) / 6; const l = document.createElementNS(NS, "line"); const r1 = i % 3 === 0 ? 205 : 232, r2 = 252; l.setAttribute("x1", Math.sin(a) * r1); l.setAttribute("y1", -Math.cos(a) * r1); l.setAttribute("x2", Math.sin(a) * r2); l.setAttribute("y2", -Math.cos(a) * r2); ticks.appendChild(l); }
+        const rays = $("#s4-rays g");
+        for (let i = 0; i < 16; i++) { const p = document.createElementNS(NS, "path"); p.setAttribute("d", "M0 0 L-30 -380 L30 -380Z"); p.setAttribute("transform", `rotate(${i * 22.5})`); p.setAttribute("opacity", i % 2 ? 0.28 : 0.14); rays.appendChild(p); }
+        tl.fromTo("#s4-rays", { opacity: 0, scale: 0.6, rotation: -20 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.7, ease: "power3.out" }, 14.0);
+        tl.to("#s4-rays", { rotation: 22, duration: 2.9, ease: "none" }, 14.0);
+        tl.fromTo("#s4-clock", { opacity: 0, scale: 0.4, rotation: -30 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.5, ease: "back.out(1.7)" }, 14.24);
+        tl.fromTo("#s4-mh", { rotation: 0, svgOrigin: "0 0" }, { rotation: 360 * 6, svgOrigin: "0 0", duration: 1.05, ease: "power2.in" }, 14.3);
+        tl.fromTo("#s4-hh", { rotation: 0, svgOrigin: "0 0" }, { rotation: 90, svgOrigin: "0 0", duration: 1.05, ease: "power2.in" }, 14.3);
+        tl.to("#s4-clock", { y: -90, scale: 0.8, duration: 0.3, ease: "power3.out" }, 15.3);
+        slam(15.28, "#s4-3", { s0: 2.6, rot: -4 });
+        slam(15.57, "#s4-jam", { s0: 2.0, rot: 3 });
+        wob(15.9, 16.85, "#s4-big", 1.2, 0.18);
+        slide(15.76, "#s4-dep", 0, 40, { dur: 0.3 });
+        slide(16.12, "#s4-lap", 0, 260, { dur: 0.42, ease: "back.out(1.4)" });
+      })();
+
+      /* ------------------------------------------------------------------ S5 · penat, quiet (16.9 – 21.0) */
+      (() => {
+        tl.fromTo("#s5-blob", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, ease: "power2.out" }, 16.9);
+        tl.fromTo("#s5-char", { y: 120, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power2.out" }, 16.9);
+        tl.fromTo("#s5-stage", { scale: 1 }, { scale: 1.07, duration: 4.1, ease: "none", transformOrigin: "50% 60%" }, 16.9);
+        pop(17.36, "#s5-prog", { rot: -1, s0: 0.8, y0: -40 });
+        tl.fromTo("#s5-fill", { scaleX: 0.02 }, { scaleX: 0.7, duration: 0.55, ease: "power1.out" }, 17.45);
+        tl.to("#s5-prog", { x: 6, duration: 0.05, yoyo: true, repeat: 5, ease: "none" }, 18.05);
+        gone(18.42, "#s5-prog", { y: -60, scale: 0.95, dur: 0.25 });
+        tl.fromTo("#s5-post", { opacity: 0, scale: 0.5, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.35, ease: "back.out(1.8)" }, 18.8);
+        tl.to("#s5-post", { y: 460, rotation: 38, opacity: 0.0, duration: 0.55, ease: "power2.in" }, 19.5);
+        slam(19.5, "#s5-big", { s0: 1.5, rot: -2 });
+        wob(19.9, 20.8, "#s5-big", 1.2, 0.2);
+      })();
+
+      /* ------------------------------------------------------------------ S6a · panduan video guna code (21.0 – 23.65) */
+      (() => {
+        slide(21.46, "#s6a-lbl", -80, 0, { dur: 0.3 });
+        slam(21.93, "#s6a-l1", { s0: 1.5, rot: -2 });
+        slam(22.33, "#s6a-l2", { s0: 1.5, rot: 2 });
+        slam(22.75, "#s6a-l3", { s0: 1.5, rot: -1.5 });
+        tl.fromTo("#s6a-char", { x: 400, opacity: 0, rotation: 6 }, { x: 0, opacity: 1, rotation: 0, duration: 0.6, ease: "back.out(1.4)" }, 21.1);
+        tl.to("#s6a-cur", { opacity: 0, duration: 0.01 }, 23.0);
+        tl.to("#s6a-cur", { opacity: 1, duration: 0.01 }, 23.15);
+        tl.to(["#s6a-l1", "#s6a-l2", "#s6a-l3", "#s6a-lbl"], { x: -1200, duration: 0.3, ease: "power3.in", stagger: 0.04 }, 23.3);
+        tl.to("#s6a-char", { x: 700, duration: 0.3, ease: "power3.in" }, 23.3);
+      })();
+
+      /* ------------------------------------------------------------------ S6b · VGC + workflow (23.65 – 32.5) */
+      (() => {
+        tl.fromTo("#vgc-tile", { opacity: 0, scale: 0.2, rotation: -25 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.55, ease: "back.out(1.8)" }, 23.65);
+        tl.fromTo("#vgc-ring1", { opacity: 0.9, scale: 1 }, { opacity: 0, scale: 1.9, duration: 0.7, ease: "power2.out" }, 23.8);
+        tl.fromTo("#vgc-ring2", { opacity: 0.9, scale: 1 }, { opacity: 0, scale: 2.5, duration: 0.8, ease: "power2.out" }, 23.9);
+        tl.to("#vgc-tile", { rotation: -4, duration: 0.4, ease: "sine.inOut" }, 24.25);
+        /* tile docks top-left */
+        tl.to("#vgc-tile", { x: -371, y: -510, scale: 0.32, rotation: 0, duration: 0.55, ease: "power3.inOut", transformOrigin: "50% 50%" }, 24.7);
+        tl.fromTo("#s6b-char", { x: -400, opacity: 0 }, { x: 0, opacity: 1, duration: 0.6, ease: "back.out(1.3)" }, 24.75);
+        slam(25.5, "#s6b-bel", { s0: 1.6, rot: -2 });
+        const node = (id, t, arrow, rot) => { pop(t, id, { rot: rot, s0: 0.6, y0: 50 }); if (arrow) tl.fromTo(arrow, { opacity: 0, scaleY: 0, transformOrigin: "50% 0%" }, { opacity: 1, scaleY: 1, duration: 0.2, ease: "power2.out" }, t + 0.12); };
+        node("#n-a", 26.95, null, -1.5);
+        node("#n-b", 27.86, "#a-ab", 1.5);
+        node("#n-c", 28.38, "#a-bc", -1);
+        tl.fromTo("#b-gpt", { opacity: 0, scale: 0.3, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: "back.out(2.2)" }, 29.95);
+        tl.fromTo("#b-cl", { opacity: 0, scale: 0.3, y: 20 }, { opacity: 1, scale: 1, y: 0, duration: 0.3, ease: "back.out(2.2)" }, 31.1);
+        tl.to("#n-b", { scale: 1.04, duration: 0.15, yoyo: true, repeat: 1, ease: "power2.out" }, 29.95);
+        tl.to("#n-b", { scale: 1.04, duration: 0.15, yoyo: true, repeat: 1, ease: "power2.out" }, 31.1);
+        node("#n-d", 31.22, "#a-cd", 1);
+        node("#n-e", 31.4, "#a-de", -1.5);
+        tl.to("#a-loop path:first-child", { strokeDashoffset: 0, duration: 0.3, ease: "power2.inOut" }, 31.55);
+        tl.fromTo("#a-loophead", { opacity: 0 }, { opacity: 1, duration: 0.1 }, 31.82);
+        tl.to("#s6b-char", { y: -8, duration: 1.2, ease: "sine.inOut" }, 25.5); tl.to("#s6b-char", { y: 6, duration: 1.2, ease: "sine.inOut" }, 26.7); tl.to("#s6b-char", { y: -6, duration: 1.2, ease: "sine.inOut" }, 27.9); tl.to("#s6b-char", { y: 4, duration: 1.2, ease: "sine.inOut" }, 29.1); tl.to("#s6b-char", { y: -7, duration: 0.9, ease: "sine.inOut" }, 30.3); tl.to("#s6b-char", { y: 5, duration: 0.9, ease: "sine.inOut" }, 31.2); tl.to("#s6b-char", { y: -4, duration: 0.8, ease: "sine.inOut" }, 32.1); tl.to("#vgc-tile", { rotation: 4, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 3 }, 30.5);
+      })();
+
+      /* ------------------------------------------------------------------ S7 · campak / tidur / siap (32.5 – 35.45) */
+      (() => {
+        const box = $("#s7-throw"); const th = [];
+        for (let i = 0; i < 5; i++) { const n = 3 + i * 5; const c = mk("div", "fcard", null, `<img src="assets/footage/clip_${String(n).padStart(2, "0")}.jpg" alt=""><b data-layout-allow-overlap>MVI_${400 + i * 37}.MP4</b>`); c.id = "th" + i; c.setAttribute("data-layout-allow-overlap", ""); box.appendChild(c); th.push(c); }
+        const st = $("#s7-stars");
+        for (let i = 0; i < 18; i++) { const s = mk("i", "", { position: "absolute", left: Math.round(R() * 1040) + "px", top: Math.round(R() * 560) + "px", width: 6 + Math.round(R() * 6) + "px", height: 6 + Math.round(R() * 6) + "px", borderRadius: "50%", background: "#f2eee6", opacity: 0.8, display: "block" }); st.appendChild(s); }
+        /* a: campak footage */
+        slam(32.53, "#s7-t1", { s0: 1.7, rot: -3 });
+        slam(32.86, "#s7-t2", { s0: 1.7, rot: 2 });
+        tl.fromTo("#s7-ai", { opacity: 0, scale: 0.3, rotation: 15 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.4, ease: "back.out(1.8)" }, 32.56);
+        th.forEach((c, i) => {
+          const t = 32.6 + i * 0.16;
+          tl.fromTo(c, { x: -420, y: 1000 + i * 90, scale: 0.9, rotation: -30, opacity: 1 }, { x: 600 + (i % 2) * 20, y: 960 + (i % 3) * 20, scale: 0.7, rotation: 14, duration: 0.34, ease: "power2.in" }, t);
+          tl.to(c, { scale: 0.18, opacity: 0, duration: 0.1, ease: "power2.in" }, t + 0.34);
+          tl.to("#s7-ai", { scale: 1.07, duration: 0.07, yoyo: true, repeat: 1, ease: "power2.out" }, t + 0.34);
+        });
+        /* b: tidur */
+        tl.fromTo("#s7a", { opacity: 1 }, { opacity: 0, duration: 0.001, immediateRender: false }, 33.52);
+        tl.fromTo("#s7b", { opacity: 0 }, { opacity: 1, duration: 0.001 }, 33.52);
+        tl.fromTo("#s7-char", { y: 160, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, ease: "power2.out" }, 33.52);
+        slam(33.74, "#s7-tidur", { s0: 1.5, rot: -2 });
+        tl.fromTo("#s7-moon", { opacity: 0, scale: 0.5 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(1.6)" }, 33.6);
+        ["#s7-z1", "#s7-z2", "#s7-z3"].forEach((z, i) => {
+          tl.fromTo(z, { opacity: 0, y: 40, scale: 0.5 }, { opacity: 1, y: -50 - i * 30, scale: 1, duration: 0.3, ease: "back.out(1.7)" }, 33.7 + i * 0.12);
+          tl.to(z, { y: -150 - i * 40, opacity: 0, duration: 0.3, ease: "power1.in" }, 34.05 + i * 0.05);
+        });
+        /* c: dah siap */
+        tl.fromTo("#s7b", { opacity: 1 }, { opacity: 0, duration: 0.001, immediateRender: false }, 34.33);
+        tl.fromTo("#s7c", { opacity: 0 }, { opacity: 1, duration: 0.001 }, 34.33);
+        tl.fromTo("#s7-disc", { scale: 0, rotation: -40 }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2)" }, 34.33);
+        slam(34.62, "#s7-siap", { s0: 1.8, rot: -2 });
+        tl.fromTo("#s7-barfill", { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "power3.out" }, 34.5);
+        tl.fromTo("#s7-bar", { opacity: 0 }, { opacity: 1, duration: 0.1 }, 34.45);
+        wob(34.95, 35.4, "#s7-siap", 1.2, 0.15);
+      })();
+
+      /* ------------------------------------------------------------------ S8 · demo (35.45 – 46.95) */
+      (() => {
+        tl.fromTo("#demo", { opacity: 0.2, x: 36, y: 890, scale: 0.94 }, { opacity: 1, x: 36, y: 444, scale: 1, duration: 0.5, ease: "back.out(1.2)" }, 35.45);
+        slide(36.09, "#s8-top1", -60, 0, { dur: 0.3 });
+        slam(36.79, "#s8-top2", { s0: 1.8, rot: -2 });
+        slam(38.94, "#s8-b1", { s0: 1.7, rot: -2 });
+        slam(39.35, "#s8-b2", { s0: 1.7, rot: 2 });
+        slam(39.65, "#s8-b3", { s0: 1.7, rot: -2 });
+        gone(40.95, ["#s8-top1", "#s8-top2", "#s8-b1", "#s8-b2", "#s8-b3"], { dur: 0.3, scale: 0.97, y: 30 });
+        tl.to("#demo", { scale: 1.015, duration: 5, ease: "none" }, 41.1);
+        tl.to("#demo", { scale: 1, duration: 0.3, ease: "power2.in" }, 46.6);
+      })();
+
+      /* ------------------------------------------------------------------ S9 · tutorial / template / group support (46.95 – 51.1) */
+      (() => {
+        slam(47.3, "#s9-ada", { s0: 1.6, rot: -2 });
+        tl.fromTo("#s9-w1", { opacity: 0, scale: 1.8, rotation: -3 }, { opacity: 1, scale: 1, rotation: -2, duration: 0.3, ease: "power4.out" }, 47.62);
+        tl.to("#s9-w1", { opacity: 0, duration: 0.001 }, 48.5);
+        tl.fromTo("#s9-w2", { opacity: 0, scale: 1.8, rotation: 3 }, { opacity: 1, scale: 1, rotation: 2, duration: 0.3, ease: "power4.out" }, 48.86);
+        tl.to("#s9-w2", { opacity: 0, duration: 0.001 }, 49.52);
+        tl.fromTo("#s9-w3", { opacity: 0, scale: 1.8, rotation: -2 }, { opacity: 1, scale: 1, rotation: -2, duration: 0.3, ease: "power4.out" }, 49.6);
+        tl.fromTo("#s9-k1", { opacity: 0, y: 700, rotation: -12, scale: 0.8 }, { opacity: 1, y: 0, rotation: -4, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, 47.55);
+        tl.fromTo("#s9-k2", { opacity: 0, y: 700, rotation: 10, scale: 0.8 }, { opacity: 1, y: 0, rotation: 2, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, 48.8);
+        tl.fromTo("#s9-k3", { opacity: 0, y: 700, rotation: 14, scale: 0.8 }, { opacity: 1, y: 0, rotation: 5, scale: 1, duration: 0.55, ease: "back.out(1.5)" }, 49.52);
+        tl.to("#s9-k1", { scale: 1.03, duration: 1.2, ease: "none" }, 48.1); tl.to("#s9-k2", { scale: 1.03, duration: 1.2, ease: "none" }, 49.4); tl.to("#s9-k3", { scale: 1.03, duration: 1.1, ease: "none" }, 50.05);
+      })();
+
+      /* ------------------------------------------------------------------ S10 · basic → advance → expert (51.1 – 55.6) */
+      (() => {
+        const base = [-120, 230, 470]; const tops = [1560, 1330, 1100]; const dy = 884; /* feet = top + 884 */
+        tl.fromTo("#st1", { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: "back.out(1.6)" }, 51.1);
+        tl.fromTo("#s10-char", { opacity: 0, y: 300, scale: 0.9 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.5)" }, 51.2);
+        tl.fromTo("#s10-ghost", { x: -200, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: "power2.out" }, 51.1);
+        slam(52.14, "#st1-l", { s0: 1.6 });
+        tl.fromTo("#st2", { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: "back.out(1.6)" }, 52.35);
+        /* hop 1 -> 2 */
+        tl.to("#s10-char", { x: base[1] - base[0], y: tops[1] - tops[0] - 140, duration: 0.2, ease: "power2.out" }, 52.62);
+        tl.to("#s10-char", { y: tops[1] - tops[0], duration: 0.2, ease: "power2.in" }, 52.82);
+        tl.fromTo("#s10-char", { scaleY: 1 }, { scaleY: 0.93, duration: 0.08, yoyo: true, repeat: 1, immediateRender: false }, 52.98);
+        slam(53.17, "#st2-l", { s0: 1.6 });
+        tl.fromTo("#st3", { scaleY: 0 }, { scaleY: 1, duration: 0.35, ease: "back.out(1.6)" }, 53.5);
+        /* hop 2 -> 3 */
+        tl.to("#s10-char", { x: base[2] - base[0], y: tops[2] - tops[0] - 140, duration: 0.2, ease: "power2.out" }, 53.9);
+        tl.to("#s10-char", { y: tops[2] - tops[0], duration: 0.2, ease: "power2.in" }, 54.1);
+        tl.fromTo("#s10-char", { scaleY: 1 }, { scaleY: 0.93, duration: 0.08, yoyo: true, repeat: 1, immediateRender: false }, 54.26);
+        slam(54.28, "#st3-l", { s0: 1.8, rot: -2 });
+        const cf = $("#s10-conf"); const cols = ["#14171f", "#f2eee6", "#f0b64a", "#252f4a"]; const parts = [];
+        for (let i = 0; i < 26; i++) { const p = mk("i", "", { position: "absolute", left: "700px", top: "500px", width: 14 + Math.round(R() * 14) + "px", height: 14 + Math.round(R() * 14) + "px", background: cols[i % 4], borderRadius: i % 3 ? "3px" : "50%", display: "block" }); cf.appendChild(p); parts.push(p); }
+        parts.forEach((p, i) => { const a = (i / parts.length) * Math.PI * 2 + R(); const d = 260 + R() * 360; tl.fromTo(p, { opacity: 0 }, { opacity: 1, duration: 0.04 }, 54.3); tl.fromTo(p, { x: 0, y: 0, rotation: 0 }, { x: Math.cos(a) * d, y: Math.sin(a) * d * 0.8 + 140, rotation: 360 * (R() - 0.5), duration: 0.9, ease: "power3.out" }, 54.3); tl.to(p, { opacity: 0, duration: 0.4, ease: "power1.in" }, 54.75); });
+        wob(54.7, 55.5, "#s10-char", 1.3, 0.2);
+        wob(51.5, 52.55, "#s10-char", 1.6, 0.18);
+        tl.to("#s10-ghost", { x: -140, duration: 4.4, ease: "none" }, 51.2);
+      })();
+
+      /* ------------------------------------------------------------------ S11 · CTA (55.6 – 62.26) */
+      (() => {
+        const cal = $("#s11-cal"); const names = ["I", "S", "R", "K", "J", "S", "A"]; const ticks = [];
+        names.forEach((n, i) => cal.appendChild(mk("div", "mono", { position: "absolute", left: 66 + i * 134 + "px", top: "0px", width: "118px", textAlign: "center", fontSize: "44px", color: "#f0b64a" }, n)));
+        for (let r = 0; r < 5; r++) for (let c = 0; c < 7; c++) {
+          const x = 66 + c * 134, y = 64 + r * 134;
+          cal.appendChild(mk("div", "calcell", { left: x + "px", top: y + "px" }));
+          const tk = mk("div", "tick", { left: x + "px", top: y + "px" }, `<svg width="64" height="52" viewBox="0 0 64 52"><path d="M6 28 L24 44 L58 8" fill="none" stroke="#14171f" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/></svg>`);
+          cal.appendChild(tk); ticks.push(tk);
+        }
+        slide(55.86, "#s11-nm", -80, 0, { dur: 0.3 });
+        slam(56.02, "#s11-post", { s0: 1.5, rot: -2 });
+        slam(56.66, "#s11-hh", { s0: 1.5, rot: 2 });
+        tl.fromTo("#s11-cal", { opacity: 0, y: 80 }, { opacity: 1, y: 0, duration: 0.4, ease: "power3.out" }, 56.0);
+        ticks.forEach((t, i) => tl.fromTo(t, { scale: 0, rotation: -30, opacity: 0 }, { scale: 1, rotation: 0, opacity: 1, duration: 0.2, ease: "back.out(2.4)" }, 56.34 + i * 0.026));
+        /* phase B */
+        tl.to(["#s11-nm", "#s11-post", "#s11-hh", "#s11-cal"], { opacity: 0, y: 60, duration: 0.2, ease: "power2.in" }, 57.62);
+        tl.fromTo("#s11-logo", { opacity: 0, y: -60, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "back.out(1.5)" }, 57.78);
+        slam(58.1, "#s11-k", { s0: 1.6, rot: -2 });
+        tl.fromTo("#s11-char", { opacity: 0, x: -500, y: 100, rotation: -8 }, { opacity: 1, x: 0, y: 0, rotation: 0, duration: 0.6, ease: "back.out(1.4)" }, 57.9);
+        tl.fromTo("#s11-btn", { opacity: 0, scale: 0.5, y: 40 }, { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "back.out(2)" }, 58.2);
+        tl.fromTo("#s11-cur", { opacity: 0, x: 140, y: 120 }, { opacity: 1, x: 0, y: 0, duration: 0.4, ease: "power2.out" }, 58.35);
+        tl.to("#s11-cur", { scale: 0.85, duration: 0.07, yoyo: true, repeat: 1 }, 58.8);
+        tl.fromTo("#s11-ring", { opacity: 1, scale: 0.3 }, { opacity: 0, scale: 2.6, duration: 0.5, ease: "power2.out" }, 58.82);
+        slam(58.89, "#s11-d1", { s0: 1.6, rot: -2 });
+        slam(59.2, "#s11-d2", { s0: 1.6, rot: 2 });
+        tl.to("#s11-btn", { scale: 1.05, duration: 0.5, yoyo: true, repeat: 5, ease: "sine.inOut" }, 59.7);
+        tl.to("#s11-char", { y: -10, duration: 1.2, ease: "sine.inOut", yoyo: true, repeat: 2 }, 59.7);
+      })();
+
+      /* ------------------------------------------------------------------ camera punches on beats (fast-pace feel) */
+      (() => {
+        const secs = [["#s1", 0, 5.8], ["#s2", 5.8, 13.9], ["#s4", 13.9, 16.9], ["#s5", 16.9, 21.0], ["#s6a", 21.0, 23.65], ["#s6b", 23.65, 32.5], ["#s7", 32.5, 35.45], ["#s9", 46.95, 51.1], ["#s10", 51.1, 55.6], ["#s11", 55.6, 62.26]];
+        const big = [3.78, 4.42, 15.28, 15.57, 19.5, 21.93, 22.33, 22.75, 23.65, 25.5, 32.53, 32.86, 34.62, 47.3, 54.28, 56.02, 56.66, 58.1, 59.2];
+        const small = [1.22, 2.36, 2.66, 3.05, 6.05, 7.3, 8.4, 9.46, 11.3, 12.3, 14.24, 17.36, 26.95, 27.86, 28.38, 29.95, 31.1, 33.74, 47.62, 48.86, 49.6, 52.14, 53.17, 58.89];
+        const hit = (t, k) => { const sc = secs.find((x) => t >= x[1] && t < x[2]); if (!sc) return; tl.fromTo(sc[0], { scale: 1 + k }, { scale: 1, duration: 0.24, ease: "power3.out", immediateRender: false, transformOrigin: "50% 50%" }, t); };
+        big.forEach((t) => hit(t, 0.034)); small.forEach((t) => hit(t, 0.018));
+      })();
+
+      /* ------------------------------------------------------------------ global transitions */
+      tl.fromTo("#wipe", { x: 1300, opacity: 1, skewX: -12 }, { x: -260, opacity: 1, duration: 0.42, ease: "power3.inOut", immediateRender: false }, 20.82);
+      tl.to("#wipe", { opacity: 0, duration: 0.001 }, 21.3);
+      tl.fromTo("#flash", { opacity: 1 }, { opacity: 0, duration: 0.12, ease: "none", immediateRender: false }, 13.9);
+      tl.fromTo("#flash", { opacity: 0.9 }, { opacity: 0, duration: 0.12, ease: "none", immediateRender: false }, 34.33);
+      tl.fromTo("#flash", { opacity: 0.9 }, { opacity: 0, duration: 0.12, ease: "none", immediateRender: false }, 5.8);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

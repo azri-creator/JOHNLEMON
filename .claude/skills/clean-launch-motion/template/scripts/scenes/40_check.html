@@ -1,0 +1,46 @@
+<!-- STARTER SCENE (check): ring draws (0.5 s) -> check draws (0.25 s) -> restrained confetti; then the circle morphs into a
+     phone-shaped rounded rectangle and the result fades in inside. Editorial "done/okay", never an automated guarantee.
+     For a real video inside: <video id="check-vid" src="assets/video/result.mp4" muted playsinline data-start="<s>" data-duration="<s>"
+     style="width:100%;height:100%;object-fit:cover"></video> in place of the .ph (every <video> needs an id; no data-start on its parents). -->
+<section class="scene" id="check">
+  <div class="cam" id="check-cam"><div class="step" id="check-step">
+    <div class="hl" id="check-h1" data-y="330" data-size="88">
+      <span data-at="check:0">Semak</span><span data-at="check:1">dulu.</span><span class="blue" data-at="check:-3@-0.12">Baru video.</span>
+    </div>
+    <div id="check-wrap" style="position: absolute; left: 0; top: 1130px; width: 1080px; height: 0; display: flex; align-items: center; justify-content: center">
+      <div id="check-morph" style="flex: none; position: relative; width: 300px; height: 300px; border-radius: 150px; background: #fff; box-shadow: var(--deep); overflow: hidden; opacity: 0">
+        <div id="check-media" style="position: absolute; inset: 16px; border-radius: 68px; overflow: hidden; opacity: 0">
+          <div class="ph dark" style="width: 100%; height: 100%; border-radius: 0; font-size: 34px">Video hasil (gantikan)</div>
+        </div>
+      </div>
+    </div>
+    <div id="check-ring" data-r="150" style="position: absolute; left: 370px; top: 960px; width: 340px; height: 340px; opacity: 0">
+      <svg width="340" height="340" style="overflow: visible">
+        <defs><linearGradient id="check-rg" x1="0" x2="1"><stop offset="0" stop-color="#2B7CF5" /><stop offset="1" stop-color="#7CC0F9" /></linearGradient></defs>
+        <circle cx="170" cy="170" r="138" fill="none" stroke="rgba(72,152,248,0.15)" stroke-width="14" />
+        <circle class="ring" cx="170" cy="170" r="138" fill="none" stroke="url(#check-rg)" stroke-width="14" stroke-linecap="round"
+          stroke-dasharray="867.08" stroke-dashoffset="867.08" transform="rotate(-90 170 170)" />
+        <path class="tick" d="M118 174 l36 36 l70 -78" fill="none" stroke="#2B7CF5" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"
+          stroke-dasharray="170" stroke-dashoffset="170" />
+      </svg>
+    </div>
+    <div class="fx" id="check-fx"></div>
+  </div></div>
+</section>
+<script>
+scene("check", (S) => {
+  const ringAt = sw("check", 0, 0.1), morphAt = sw("check", -3, -0.12);
+  cam(S, { steps: [ringAt + 0.45], push: 0.03, roll: 0.5 });
+  headline("check-h1");
+  tl.set(["#check-ring", "#check-morph"], { opacity: 1 }, ringAt);
+  ringCheck("check-ring", ringAt);
+  tl.fromTo("#check-morph", { scale: 0.5 }, { scale: 1, duration: 0.4, ease: (p) => backOut(EASE_OUT(p)) }, ringAt);
+  confetti("check-fx", ringAt + 0.5, 540, 1130, 20);
+  // circle -> rounded rectangle (phone proportions); the result fades in inside
+  tl.set("#check-morph", { backgroundColor: "#0d0f14" }, morphAt);
+  tl.fromTo("#check-morph", { width: 300, height: 300, borderRadius: 150 }, { width: 600, height: 1278, borderRadius: 84, duration: 0.5, ease: EASE_IO }, morphAt);
+  tl.fromTo("#check-wrap", { y: 0 }, { y: 60, duration: 0.5, ease: EASE_IO }, morphAt);
+  curve("#check-ring", "opacity", morphAt, 0.5, (p) => 1 - clamp01(EASE_IO(p) * 3));
+  curve("#check-media", "opacity", morphAt, 0.5, (p) => clamp01((EASE_IO(p) - 0.35) / 0.35), { ir: true });
+});
+</script>

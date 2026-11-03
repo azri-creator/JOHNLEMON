@@ -1,0 +1,42 @@
+<!doctype html><html><head><meta charset="UTF-8" /></head><body><template>
+<style>
+/*COMMON*/
+#pn{position:absolute;left:90px;top:900px;width:900px;height:250px;opacity:0}
+#lb{position:absolute;left:40px;top:30px;font-weight:700;font-size:28px;letter-spacing:.09em;text-transform:uppercase;color:#9AA4B2}
+#ct{position:absolute;right:40px;top:22px;font-family:"JetBrains Mono",monospace;font-weight:700;font-size:40px;color:#F5F7FA}
+#trk{position:absolute;left:40px;top:150px;width:820px;height:4px;background:rgba(255,255,255,.2);border-radius:2px}
+#ph{position:absolute;left:40px;top:100px;width:4px;height:104px;background:#F5F7FA;box-shadow:0 0 14px rgba(255,255,255,.45)}
+.dm{position:absolute;top:135px;width:34px;height:34px;margin-left:-17px;background:#F5F7FA;border-radius:5px}
+.xx{position:absolute;top:122px;width:60px;height:60px;margin-left:-30px;opacity:0}
+#st{position:absolute;left:290px;top:1170px;height:86px;padding:0 40px;border-radius:100px;background:#F5F7FA;color:#06090D;font-weight:900;font-size:46px;display:flex;align-items:center;gap:16px;opacity:0}
+</style>
+<div id="root" data-composition-id="keyf" data-width="1080" data-height="1920">
+  <div id="pn" class="glass">
+    <div id="lb">Keyframe</div><div id="ct">6</div>
+    <div id="trk"></div><div id="ph"></div>
+    <div class="dm" id="d0" style="left:110px"></div><div class="dm" id="d1" style="left:240px"></div><div class="dm" id="d2" style="left:370px"></div><div class="dm" id="d3" style="left:500px"></div><div class="dm" id="d4" style="left:630px"></div><div class="dm" id="d5" style="left:760px"></div>
+    <svg class="xx" id="x0" style="left:110px" viewBox="0 0 60 60"><path d="M12 12L48 48M48 12L12 48" stroke="#FF4D4D" stroke-width="7" stroke-linecap="round"/></svg>
+    <svg class="xx" id="x1" style="left:240px" viewBox="0 0 60 60"><path d="M12 12L48 48M48 12L12 48" stroke="#FF4D4D" stroke-width="7" stroke-linecap="round"/></svg>
+    <svg class="xx" id="x2" style="left:370px" viewBox="0 0 60 60"><path d="M12 12L48 48M48 12L12 48" stroke="#FF4D4D" stroke-width="7" stroke-linecap="round"/></svg>
+    <svg class="xx" id="x3" style="left:500px" viewBox="0 0 60 60"><path d="M12 12L48 48M48 12L12 48" stroke="#FF4D4D" stroke-width="7" stroke-linecap="round"/></svg>
+    <svg class="xx" id="x4" style="left:630px" viewBox="0 0 60 60"><path d="M12 12L48 48M48 12L12 48" stroke="#FF4D4D" stroke-width="7" stroke-linecap="round"/></svg>
+    <svg class="xx" id="x5" style="left:760px" viewBox="0 0 60 60"><path d="M12 12L48 48M48 12L12 48" stroke="#FF4D4D" stroke-width="7" stroke-linecap="round"/></svg>
+  </div>
+  <div id="st">0 keyframe <svg width="44" height="44" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="#06090D" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+</div>
+<script>
+gsap.set(".dm",{rotate:45});
+const tl=gsap.timeline({paused:true});
+// local 0 = 8.3 s
+tl.fromTo("#pn",{opacity:0,y:50},{opacity:1,y:0,duration:.45,ease:"expo.out"},.12);
+tl.fromTo("#ph",{x:0},{x:800,duration:1.4,ease:"none"},.25);
+for(let i=0;i<6;i++){const t=.78+i*.13;
+  tl.fromTo("#keyf__x"+i,{opacity:0,scale:.4},{opacity:1,scale:1,duration:.08,ease:"power2.out"},t);
+  tl.to(["#keyf__d"+i,"#keyf__x"+i],{opacity:0,y:30,scale:.2,rotate:"+=90",duration:.22,ease:"power3.in"},t+.09);
+  tl.set("#ct",{textContent:String(5-i)},t+.1);
+}
+tl.fromTo("#st",{opacity:0,scale:1.4},{opacity:1,scale:1,duration:.35,ease:"expo.out"},1.64);
+tl.to(["#pn","#st"],{opacity:0,y:-30,duration:.25,ease:"power2.in"},1.92);
+window.__timelines["keyf"]=tl;
+</script>
+</template></body></html>

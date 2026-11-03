@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="ms" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --red: #c3191f;
+        --red2: #8f1217;
+        --blk: #171412;
+        --cr: #ece2c9;
+        --cr2: #d6c8a6;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--cr); }
+      #root { width: 100%; height: 100%; position: relative; overflow: hidden; background: var(--cr); font-family: "Montserrat", sans-serif; }
+      .scene { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
+      .cam, .zoom { position: absolute; inset: 0; }
+      .scene svg { position: absolute; inset: 0; width: 1080px; height: 1920px; overflow: visible; }
+      #hall { position: absolute; left: -270px; top: -480px; width: 1620px; height: 2880px; }
+      #grain { position: absolute; inset: 0; background: url(assets/grain.png); background-size: 1080px 1920px; mix-blend-mode: multiply; opacity: 0.2; pointer-events: none; }
+      #grain2 { position: absolute; inset: 0; background: url(assets/grain.png); background-size: 1080px 1920px; mix-blend-mode: screen; opacity: 0.07; pointer-events: none; }
+      #caps { position: absolute; left: 0; top: 1050px; width: 1080px; height: 130px; }
+      .cap {
+        position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+        font-family: "Montserrat", sans-serif; font-weight: 900; font-size: 76px; letter-spacing: 1px;
+        color: #fff; white-space: nowrap; text-transform: uppercase;
+        -webkit-text-stroke: 13px #0f0d0c; paint-order: stroke fill;
+        text-shadow: 0 8px 0 #0f0d0c, 0 10px 18px rgba(0, 0, 0, 0.45);
+        opacity: 0;
+      }
+      #endcard { position: absolute; inset: 0; opacity: 0; }
+      .endl { position: absolute; left: 0; width: 1080px; text-align: center; font-family: "Montserrat", sans-serif; font-weight: 900; color: var(--cr); white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="57" data-width="1080" data-height="1920">
+      <div id="stage">
+        <div class="scene" id="s1"><div class="cam" id="c1"><div class="zoom" id="z1" style="transform-origin: 640px 640px"><svg id="v1" viewBox="0 0 1080 1920"></svg></div></div></div>
+        <div class="scene" id="s2"><div class="cam" id="c2"><svg id="v2" viewBox="0 0 1080 1920"></svg></div></div>
+        <div class="scene" id="s3"><div class="cam" id="c3" style="transform-origin: 540px 700px"><div class="zoom" id="z3" style="transform-origin: 540px 830px"><svg id="v3" viewBox="0 0 1080 1920"></svg></div></div></div>
+        <div class="scene" id="s4"><div class="cam" id="c4" style="transform-origin: 540px 960px"><canvas id="hall" width="1620" height="2880"></canvas></div></div>
+        <div class="scene" id="s5"><div class="cam" id="c5" style="transform-origin: 540px 760px"><svg id="v5" viewBox="0 0 1080 1920"></svg></div></div>
+        <div class="scene" id="s6"><div class="cam" id="c6"><svg id="v6" viewBox="0 0 1080 1920"></svg></div></div>
+        <div class="scene" id="s8"><div class="cam" id="c8" style="transform-origin: 540px 960px"><div class="zoom" id="z8" style="transform-origin: 540px 650px"><svg id="v8" viewBox="0 0 1080 1920"></svg></div></div></div>
+        <div class="scene" id="s9"><div class="cam" id="c9" style="transform-origin: 560px 700px"><svg id="v9" viewBox="0 0 1080 1920"></svg></div></div>
+        <div class="scene" id="s10"><div class="cam" id="c10" style="transform-origin: 540px 900px"><div class="zoom" id="z10" style="transform-origin: 540px 900px"><svg id="v10" viewBox="0 0 1080 1920"></svg></div></div></div>
+        <div class="scene" id="s11"><div class="cam" id="c11" style="transform-origin: 540px 800px"><svg id="v11" viewBox="0 0 1080 1920"></svg></div></div>
+        <div class="scene" id="s12"><div class="cam" id="c12" style="transform-origin: 540px 960px"><div class="zoom" id="z12" style="transform-origin: 860px 1468px"><svg id="v12" viewBox="0 0 1080 1920"></svg></div></div></div>
+        <div class="scene" id="s13"><div class="cam" id="c13" style="transform-origin: 540px 960px"><svg id="v13" viewBox="0 0 1080 1920"></svg></div>
+          <div id="endcard">
+            <div class="endl" id="end1" style="top: 760px; font-size: 118px; letter-spacing: -2px">NAMA</div>
+            <div class="endl" id="end2" style="top: 890px; font-size: 118px; letter-spacing: -2px">BRAND</div>
+            <div class="endl" id="end3" style="top: 1090px; font-size: 40px; letter-spacing: 8px; color: #171412">TEKAN LINK SEKARANG</div>
+          </div>
+        </div>
+      </div>
+      <div id="grain"></div>
+      <div id="grain2"></div>
+      <div id="caps"></div>
+      <audio id="mix" src="assets/mix.wav" data-start="0" data-duration="57" data-track-index="10" data-volume="1"></audio>
+    </div>
+    <script>
+      /*__WORDS__*/
+      const RED = "#c3191f", RED2 = "#8f1217", BLK = "#171412", CR = "#ece2c9", CR2 = "#d6c8a6";
+      const $ = (id) => document.getElementById(id);
+      const tl = gsap.timeline({ paused: true });
+
+      // ---------- shape helpers ----------
+      // standing constructivist figure, origin at the feet, head centre at y=-262 (r=38)
+      function fig(id, x, y, s, col, arms) {
+        const a = arms === "hold"
+          ? `<polygon points="-62,-212 -78,-200 -20,-150 -8,-162" fill="${col}"/><polygon points="62,-212 78,-200 20,-150 8,-162" fill="${col}"/>`
+          : `<polygon points="-62,-212 -80,-204 -74,-108 -58,-110" fill="${col}"/><polygon points="62,-212 80,-204 74,-108 58,-110" fill="${col}"/>`;
+        return `<g id="${id}" transform="translate(${x} ${y}) scale(${s})"><g class="body">
+          <circle cx="0" cy="-262" r="38" fill="${col}"/>
+          <polygon points="-62,-216 62,-216 46,-112 -46,-112" fill="${col}"/>
+          <rect x="-44" y="-114" width="38" height="114" fill="${col}"/><rect x="6" y="-114" width="38" height="114" fill="${col}"/>
+          ${a}</g></g>`;
+      }
+      function rays(cx, cy, n, r, col, w0) {
+        let s = "";
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2, w = w0 || Math.PI / n / 1.6;
+          s += `<polygon points="${cx},${cy} ${cx + r * Math.cos(a - w)},${cy + r * Math.sin(a - w)} ${cx + r * Math.cos(a + w)},${cy + r * Math.sin(a + w)}" fill="${col}"/>`;
+        }
+        return s;
+      }
+      // hand holding a phone from the lower right (black silhouette); phone centre (0,0), 500x980
+      function phone(id, screen, clipId) {
+        return `<g id="${id}">
+          <polygon points="-120,330 -330,620 -150,1150 420,1150 330,300" fill="${BLK}"/>
+          <rect x="-262" y="-500" width="524" height="1000" rx="62" fill="#0c0a09"/>
+          <rect x="-262" y="-500" width="524" height="1000" rx="62" fill="none" stroke="#3b3430" stroke-width="5"/>
+          <clipPath id="${clipId}"><rect x="-236" y="-472" width="472" height="944" rx="42"/></clipPath>
+          <g clip-path="url(#${clipId})"><rect x="-236" y="-472" width="472" height="944" fill="${CR}"/>${screen}</g>
+          <rect x="-70" y="-462" width="140" height="26" rx="13" fill="#0c0a09"/>
+          <rect x="230" y="-160" width="110" height="74" rx="37" fill="${BLK}"/><rect x="236" y="-70" width="112" height="74" rx="37" fill="${BLK}"/><rect x="230" y="20" width="104" height="74" rx="37" fill="${BLK}"/>
+        </g>`;
+      }
+      function thumb(id) {
+        return `<g id="${id}"><path d="M 0 0 C -30 -20 -70 -10 -80 30 L -120 420 L 60 460 L 52 40 C 50 15 30 5 0 0 Z" fill="${BLK}"/><ellipse cx="-30" cy="22" rx="34" ry="22" fill="#2a2421"/></g>`;
+      }
+
+      // ================= S1 · camera shy presenter → lens =================
+      $("v1").innerHTML = `
+        <rect width="1080" height="1920" fill="${CR}"/>
+        <polygon id="s1band" points="0,1920 0,1180 1080,600 1080,1080 420,1920" fill="${RED}"/>
+        <polygon points="0,0 560,0 0,720" fill="${BLK}"/>
+        <g id="s1rays" opacity="0.9">${rays(640, 640, 9, 1500, "rgba(23,20,18,0.08)")}</g>
+        <g id="s1shapes">
+          <circle id="s1o1" cx="190" cy="430" r="70" fill="${RED}"/>
+          <polygon id="s1o2" points="880,1330 990,1520 770,1520" fill="${BLK}"/>
+          <rect id="s1o3" x="470" y="200" width="110" height="110" fill="${CR}" stroke="${BLK}" stroke-width="12"/>
+        </g>
+        <g id="s1camera">
+          <line x1="800" y1="760" x2="640" y2="1280" stroke="${BLK}" stroke-width="22"/>
+          <line x1="800" y1="760" x2="960" y2="1280" stroke="${BLK}" stroke-width="22"/>
+          <line x1="800" y1="760" x2="810" y2="1300" stroke="${BLK}" stroke-width="22"/>
+          <rect x="650" y="500" width="340" height="270" rx="20" fill="${BLK}"/>
+          <rect x="760" y="440" width="150" height="80" rx="10" fill="${BLK}"/>
+          <circle id="s1rec" cx="940" cy="545" r="16" fill="${RED}"/>
+          <circle cx="640" cy="640" r="168" fill="${BLK}"/>
+          <circle id="s1ring" cx="640" cy="640" r="124" fill="${RED}"/>
+          <circle cx="640" cy="640" r="96" fill="#0b0908"/>
+          <circle id="s1glint" cx="606" cy="604" r="22" fill="${CR}" opacity="0.85"/>
+        </g>
+        <g id="s1bub" opacity="0">
+          <rect x="230" y="1250" width="260" height="120" rx="60" fill="${CR}" stroke="${BLK}" stroke-width="10"/>
+          <polygon points="320,1362 360,1362 340,1410" fill="${BLK}"/>
+          <circle cx="310" cy="1310" r="14" fill="${BLK}"/><circle cx="360" cy="1310" r="14" fill="${BLK}"/><circle cx="410" cy="1310" r="14" fill="${BLK}"/>
+          <rect id="s1x" x="220" y="1300" width="280" height="22" fill="${RED}" transform="rotate(-14 360 1310)"/>
+        </g>
+        <ellipse cx="400" cy="1800" rx="120" ry="18" fill="rgba(0,0,0,0.25)"/><g id="s1figw">${fig("s1fig", 400, 1800, 1.3, BLK)}</g>
+      `;
+      tl.set("#s1", { opacity: 1 }, 0).set("#s1", { opacity: 0 }, 6.45);
+      tl.fromTo("#c1", { scale: 1.1, rotation: -2, transformOrigin: "540px 1100px" }, { scale: 1.0, rotation: 1, duration: 6.4, ease: "sine.inOut" }, 0);
+      tl.fromTo("#s1camera", { x: 60, y: -30 }, { x: 0, y: 0, duration: 2.4, ease: "sine.out" }, 0);
+      tl.fromTo("#s1rays", { rotation: 0, svgOrigin: "640 640" }, { rotation: 22, duration: 6.4, ease: "none" }, 0);
+      tl.fromTo("#s1figw", { x: -40 }, { x: 0, duration: 1.6, ease: "sine.out" }, 0);
+      // "tak pandai cakap depan kamera": shrink back, bubble crossed out, REC pulses
+      tl.to("#s1fig .body", { scale: 0.84, transformOrigin: "50% 100%", duration: 0.5, ease: "sine.inOut" }, 2.54);
+      tl.to("#s1fig .body", { rotation: -3, transformOrigin: "50% 100%", duration: 0.12, yoyo: true, repeat: 5, ease: "sine.inOut" }, 3.05);
+      tl.fromTo("#s1bub", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.3, ease: "back.out(2)" }, 2.6);
+      tl.fromTo("#s1x", { scaleX: 0, svgOrigin: "220 1310" }, { scaleX: 1, duration: 0.25, ease: "power2.out" }, 3.2);
+      tl.to("#s1rec", { opacity: 0.15, duration: 0.18, yoyo: true, repeat: 7, ease: "none" }, 3.2);
+      tl.fromTo("#s1ring", { scale: 1, svgOrigin: "640 640" }, { scale: 1.08, duration: 0.25, yoyo: true, repeat: 3, ease: "sine.inOut" }, 3.42);
+      // "boleh buat video motion": figure relaxes, shapes start to move
+      tl.to("#s1bub", { opacity: 0, y: -40, duration: 0.3, ease: "sine.in" }, 4.1);
+      tl.to("#s1fig .body", { scale: 1, rotation: 0, transformOrigin: "50% 100%", duration: 0.45, ease: "back.out(2)" }, 4.28);
+      tl.fromTo("#s1o1", { scale: 0, svgOrigin: "190 430" }, { scale: 1, duration: 0.4, ease: "back.out(2.4)" }, 4.36);
+      tl.to("#s1o1", { x: 70, y: 120, duration: 1.6, ease: "sine.inOut" }, 4.6);
+      tl.fromTo("#s1o2", { scale: 0, rotation: -90, svgOrigin: "880 1460" }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2)" }, 4.76);
+      tl.to("#s1o2", { rotation: 120, svgOrigin: "880 1460", duration: 1.3, ease: "sine.inOut" }, 5.22);
+      tl.fromTo("#s1o3", { scale: 0, rotation: 45, svgOrigin: "525 255" }, { scale: 1, rotation: 0, duration: 0.45, ease: "back.out(2)" }, 5.0);
+      tl.to("#s1o3", { rotation: -90, svgOrigin: "525 255", duration: 1.0, ease: "sine.inOut" }, 5.46);
+      tl.to("#s1band", { x: -80, y: 40, duration: 2, ease: "sine.inOut" }, 4.3);
+      // dolly into the lens
+      tl.to("#z1", { scale: 19, duration: 0.8, ease: "power3.in" }, 5.65);
+
+      /*__SCENES__*/
+
+      // ================= captions: one word at a time =================
+      const caps = $("caps");
+      WORDS.forEach((w, i) => {
+        const el = document.createElement("div");
+        el.className = "cap"; el.id = "cap" + i; el.textContent = w.w;
+        caps.appendChild(el);
+        const end = i + 1 < WORDS.length ? WORDS[i + 1].t : 55.0;
+        tl.set(el, { opacity: 1 }, w.t).set(el, { opacity: 0 }, end);
+      });
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

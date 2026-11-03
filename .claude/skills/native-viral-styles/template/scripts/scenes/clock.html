@@ -1,0 +1,45 @@
+<!doctype html><html><head><meta charset="UTF-8" /></head><body><template>
+<style>
+/*COMMON*/
+#dial{position:absolute;left:350px;top:860px;width:380px;height:380px;border-radius:50%;opacity:0}
+#dial svg{position:absolute;left:0;top:0;width:380px;height:380px}
+.hand{position:absolute;left:186px;border-radius:6px;transform-origin:50% 100%}
+#hm{top:52px;width:8px;height:138px;background:#FFE600;box-shadow:0 0 14px rgba(255,230,0,.45)}
+#hh{top:96px;width:10px;height:94px;background:#F5F7FA}
+#hub{position:absolute;left:176px;top:176px;width:28px;height:28px;border-radius:50%;background:#F5F7FA}
+#jm{position:absolute;left:0;top:118px;width:380px;text-align:center;font-weight:900;font-size:58px;line-height:1.02;letter-spacing:-0.04em;opacity:0}
+.tk{position:absolute;left:560px;width:430px;height:100px;display:flex;align-items:center;gap:20px;padding:0 26px;opacity:0;font-weight:700;font-size:40px}
+.tk .c{width:46px;height:46px;border-radius:50%;border:3px solid rgba(255,255,255,.35);display:flex;align-items:center;justify-content:center;flex:none}
+.tk .c svg{opacity:0}
+</style>
+<div id="root" data-composition-id="clock" data-width="1080" data-height="1920">
+  <div id="dial" class="glass">
+    <svg viewBox="0 0 380 380"><g id="ticks" stroke="rgba(245,247,250,.45)" stroke-width="5" stroke-linecap="round"></g>
+      <circle id="arc" cx="190" cy="190" r="168" fill="none" stroke="#FFE600" stroke-width="10" stroke-linecap="round" transform="rotate(-90 190 190)" style="filter:drop-shadow(0 0 10px rgba(255,230,0,.45))"/></svg>
+    <div class="hand" id="hh"></div><div class="hand" id="hm"></div><div id="hub"></div>
+    <div id="jm"><span style="display:block">Jimat</span><span class="lime" style="display:block">masa</span></div>
+  </div>
+  <div class="tk glass" id="k0" style="top:880px"><div class="c" id="c0"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="#FFE600" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Zoom in / out</div>
+  <div class="tk glass" id="k1" style="top:1000px"><div class="c" id="c1"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="#FFE600" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Keyframe</div>
+  <div class="tk glass" id="k2" style="top:1120px"><div class="c" id="c2"><svg width="30" height="30" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" fill="none" stroke="#FFE600" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>Timing</div>
+</div>
+<script>
+const NS="http://www.w3.org/2000/svg",g=document.getElementById("ticks");
+for(let i=0;i<12;i++){const a=i/12*Math.PI*2,l=document.createElementNS(NS,"line");l.setAttribute("x1",190+Math.sin(a)*150);l.setAttribute("y1",190-Math.cos(a)*150);l.setAttribute("x2",190+Math.sin(a)*(i%3?138:126));l.setAttribute("y2",190-Math.cos(a)*(i%3?138:126));g.appendChild(l)}
+const arc=document.getElementById("arc"),L=2*Math.PI*168;arc.style.strokeDasharray=L;arc.style.strokeDashoffset=L;
+const tl=gsap.timeline({paused:true});
+// local 0 = 10.45 s
+tl.fromTo("#dial",{opacity:0,scale:.7},{opacity:1,scale:1,duration:.5,ease:"expo.out"},.08);
+tl.fromTo("#hm",{rotate:0},{rotate:-1440,duration:1.75,ease:"power2.inOut"},.15);
+tl.fromTo("#hh",{rotate:0},{rotate:-150,duration:1.75,ease:"power2.inOut"},.15);
+tl.to(["#hm","#hh","#hub"],{opacity:0,duration:.2},1.86);
+tl.fromTo(arc,{strokeDashoffset:L},{strokeDashoffset:L*.22,duration:.7,ease:"expo.out",immediateRender:false},1.87);
+tl.fromTo("#jm",{opacity:0,scale:.8},{opacity:1,scale:1,duration:.4,ease:"expo.out"},1.9);
+tl.to("#dial",{x:-250,scale:.82,duration:.55,ease:"expo.inOut"},2.7);
+[0,1,2].forEach(i=>{tl.fromTo("#clock__k"+i,{opacity:0,x:60},{opacity:1,x:0,duration:.45,ease:"expo.out"},2.78+i*.12);
+  tl.to("#clock__c"+i,{borderColor:"#FFE600",backgroundColor:"rgba(255,230,0,.16)",duration:.2},3.25+i*.4);
+  tl.to("#clock__c"+i+" svg",{opacity:1,duration:.15},3.25+i*.4)});
+tl.to(["#dial","#k0","#k1","#k2"],{opacity:0,y:-30,duration:.28,ease:"power2.in"},4.25);
+window.__timelines["clock"]=tl;
+</script>
+</template></body></html>

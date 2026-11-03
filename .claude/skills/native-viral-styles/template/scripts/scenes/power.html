@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta charset="UTF-8" /></head><body><template>
+<style>
+/*COMMON*/
+#aura{filter:drop-shadow(0 0 14px rgba(111,177,255,.95)) drop-shadow(0 0 46px rgba(111,177,255,.6));opacity:0}
+#mtr{position:absolute;left:150px;top:620px;width:84px;height:560px;opacity:0;border-radius:42px}
+#mfill{position:absolute;left:12px;bottom:12px;width:60px;height:536px;border-radius:30px;background:linear-gradient(to top,#2f6fd6,#6FB1FF 70%,#e3f0ff);transform-origin:50% 100%;box-shadow:0 0 26px rgba(111,177,255,.6)}
+#mlb{position:absolute;left:138px;top:560px;font-weight:700;font-size:26px;letter-spacing:.1em;color:#9AA4B2;opacity:0}
+#max{position:absolute;left:128px;top:1196px;height:60px;padding:0 22px;border-radius:30px;background:#6FB1FF;color:#06090D;font-weight:900;font-size:34px;display:flex;align-items:center;opacity:0}
+.pt{position:absolute;width:10px;height:10px;border-radius:50%;background:#d6e9ff;box-shadow:0 0 12px #6FB1FF;opacity:0}
+.rg{position:absolute;left:340px;top:800px;width:400px;height:400px;border-radius:50%;border:12px solid #6FB1FF;opacity:0;box-shadow:0 0 40px rgba(111,177,255,.7)}
+</style>
+<div id="root" data-composition-id="power" data-width="1080" data-height="1920">
+  <video id="aura" class="vid" src="assets/person.webm" data-start="0" data-duration="3.84" data-media-start="15.0" muted playsinline></video>
+  <div id="pts"></div>
+  <video id="ptop" class="vid" src="assets/person.webm" data-start="0" data-duration="3.84" data-media-start="15.0" muted playsinline></video>
+  <div class="rg" id="rg1"></div><div class="rg" id="rg2" style="border-color:#fff"></div>
+  <div id="mlb">AI LEVEL</div>
+  <div id="mtr" class="glass"><div id="mfill"></div></div>
+  <div id="max">MAX</div>
+</div>
+<script>
+function rng(s){return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const R=rng(42),P=document.getElementById("pts"),N=44,PE=[];
+for(let i=0;i<N;i++){const d=document.createElement("div");d.className="pt";PE.push(d);const x=120+R()*840,y=900+R()*700;d.style.left=x+"px";d.style.top=y+"px";const s=.5+R()*1.2;d.style.width=d.style.height=(8*s)+"px";P.appendChild(d)}
+gsap.set("#mfill",{scaleY:0});
+const tl=gsap.timeline({paused:true});
+// local 0 = 15.0 s
+tl.fromTo("#aura",{opacity:0},{opacity:.85,duration:.6,ease:"power2.out"},.9);
+tl.to("#aura",{opacity:.55,duration:.35,ease:"sine.inOut",yoyo:true,repeat:3},1.5);
+tl.to("#aura",{opacity:1,duration:.2},3.0);
+tl.fromTo(["#mlb","#mtr"],{opacity:0,x:-40},{opacity:1,x:0,duration:.45,ease:"expo.out",stagger:.05},.85);
+[[.92,.2],[1.64,.35],[2.28,.5],[2.46,.7],[3.14,.88],[3.34,1]].forEach(([t,v])=>tl.to("#mfill",{scaleY:v,duration:.22,ease:"expo.out"},t));
+tl.fromTo("#max",{opacity:0,scale:1.6},{opacity:1,scale:1,duration:.3,ease:"expo.out"},3.36);
+for(let i=0;i<N;i++){const t0=1.0+R()*1.9,du=.9+R()*.8,el=PE[i];tl.fromTo(el,{y:0},{y:-(260+R()*420),duration:du,ease:"power1.out",immediateRender:false},t0);tl.fromTo(el,{opacity:0},{opacity:.9,duration:.25,immediateRender:false},t0);tl.to(el,{opacity:0,duration:.3},t0+du-.3)}
+tl.fromTo("#rg1",{opacity:1,scale:.1},{opacity:0,scale:3.4,duration:.6,ease:"expo.out",immediateRender:false},3.34);
+tl.fromTo("#rg2",{opacity:.9,scale:.1},{opacity:0,scale:2.6,duration:.5,ease:"expo.out",immediateRender:false},3.4);
+tl.to(["#aura","#mlb","#mtr","#max"],{opacity:0,duration:.3,ease:"power2.in"},3.5);
+window.__timelines["power"]=tl;
+</script>
+</template></body></html>

@@ -1,0 +1,82 @@
+<!doctype html><html><head><meta charset="UTF-8" /></head><body><template>
+<style>
+/*COMMON*/
+#st{position:absolute;inset:0;perspective:1500px;perspective-origin:540px 900px}
+#o3{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+#pp{transform:translateZ(0px)}
+.cd{position:absolute;left:0;top:0;border-radius:22px;overflow:hidden;border:2px solid rgba(255,255,255,.35);box-shadow:0 30px 70px rgba(0,0,0,.5),0 0 30px rgba(111,177,255,.18);opacity:0;background:#0b1015}
+.cd video{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover}
+.cd .gl{position:absolute;inset:0;background:radial-gradient(circle,#ffffff 0%,#bcd9ff 40%,rgba(111,177,255,.4) 100%);opacity:0}
+#orb{position:absolute;left:0;top:0;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;background:radial-gradient(circle,#ffffff 0%,#e6f1ff 18%,#6FB1FF 44%,rgba(111,177,255,.25) 62%,rgba(111,177,255,0) 72%);opacity:0;filter:drop-shadow(0 0 30px rgba(111,177,255,.9))}
+.orr{position:absolute;left:0;top:0;border:3px solid rgba(200,225,255,.9);border-radius:50%;opacity:0}
+#or1{width:250px;height:86px;margin:-43px 0 0 -125px}
+#or2{width:86px;height:250px;margin:-125px 0 0 -43px}
+#shk{position:absolute;left:0;top:0;width:200px;height:200px;margin:-100px 0 0 -100px;border-radius:50%;border:10px solid #6FB1FF;opacity:0;box-shadow:0 0 40px rgba(111,177,255,.8)}
+.bp{position:absolute;left:0;top:0;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:#eef5ff;box-shadow:0 0 14px #6FB1FF;opacity:0}
+</style>
+<div id="root" data-composition-id="orbit" data-width="1080" data-height="1920">
+  <div id="st"><div id="o3">
+    <video id="pp" class="vid" src="assets/person.webm" data-start="0" data-duration="9" data-media-start="18.7" muted playsinline></video>
+    <div class="cd" id="c0" style="width:260px;height:462px"><video id="v0" src="assets/broll/best1.mp4" data-start="1" data-duration="6.9" data-media-start="6" muted playsinline></video><div class="gl" id="g0"></div></div>
+    <div class="cd" id="c1" style="width:440px;height:248px"><video id="v1" src="assets/broll/hc_land.mp4" data-start="1" data-duration="6.9" data-media-start="16" muted playsinline></video><div class="gl" id="g1"></div></div>
+    <div class="cd" id="c2" style="width:260px;height:462px"><video id="v2" src="assets/broll/best2.mp4" data-start="1" data-duration="6.9" data-media-start="14" muted playsinline></video><div class="gl" id="g2"></div></div>
+    <div class="cd" id="c3" style="width:300px;height:400px"><video id="v3" src="assets/broll/hc_34.mp4" data-start="1" data-duration="6.9" data-media-start="38" muted playsinline></video><div class="gl" id="g3"></div></div>
+    <div class="cd" id="c4" style="width:260px;height:462px"><video id="v4" src="assets/broll/best3.mp4" data-start="1" data-duration="6.9" data-media-start="8" muted playsinline></video><div class="gl" id="g4"></div></div>
+    <div class="cd" id="c5" style="width:260px;height:462px"><video id="v5" src="assets/broll/motion.mp4" data-start="1" data-duration="6.9" data-media-start="4" muted playsinline></video><div class="gl" id="g5"></div></div>
+  </div></div>
+  <div class="orr" id="or1"></div><div class="orr" id="or2"></div><div id="orb"></div>
+  <div id="shk"></div><div id="bst"></div>
+</div>
+<script>
+const tl=gsap.timeline({paused:true});
+window.__timelines["orbit"]=tl;
+const EL=[document.getElementById("c0"),document.getElementById("c1"),document.getElementById("c2"),document.getElementById("c3"),document.getElementById("c4"),document.getElementById("c5")];
+const GL=[document.getElementById("g0"),document.getElementById("g1"),document.getElementById("g2"),document.getElementById("g3"),document.getElementById("g4"),document.getElementById("g5")];
+const DIM=[[260,462],[440,248],[260,462],[300,400],[260,462],[260,462]];
+const YO=[-250,-70,230,-190,60,340];
+const orb=document.getElementById("orb"),or1=document.getElementById("or1"),or2=document.getElementById("or2"),shk=document.getElementById("shk"),bst=document.getElementById("bst");
+function rng(s){return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const R=rng(77),BP=[];
+for(let i=0;i<40;i++){const d=document.createElement("div");d.className="bp";bst.appendChild(d);BP.push({d,a:R()*Math.PI*2,v:180+R()*520,s:.5+R()*1.4})}
+const cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)),lerp=(a,b,k)=>a+(b-a)*k,sm=(a,b,x)=>{const t=cl((x-a)/(b-a));return t*t*(3-2*t)};
+const HK=[[25.40,620,1080],[25.55,680,1035],[25.80,490,1010],[26.05,436,1064],[26.30,491,1118],[26.55,490,1170]];
+function palm(t){if(t<=HK[0][0])return[HK[0][1],HK[0][2]];for(let i=1;i<HK.length;i++)if(t<=HK[i][0]){const k=(t-HK[i-1][0])/(HK[i][0]-HK[i-1][0]);return[lerp(HK[i-1][1],HK[i][1],k),lerp(HK[i-1][2],HK[i][2],k)]}return[HK[HK.length-1][1],HK[HK.length-1][2]]}
+function orbPos(t){
+  if(t<26.6){const p=palm(t);return[p[0],p[1]-70]}
+  const u=cl((t-26.6)/.62),e=u*u*(3-2*u);const a=[490,1100],c=[430,760],b=[770,370];
+  return[(1-e)*(1-e)*a[0]+2*(1-e)*e*c[0]+e*e*b[0],(1-e)*(1-e)*a[1]+2*(1-e)*e*c[1]+e*e*b[1]];
+}
+function renderAt(t){
+  const alpha=(t<24.0?0:16*(1-Math.pow(1-cl((t-24.0)/.45),3)))*Math.PI/180;
+  for(let i=0;i<6;i++){
+    const el=EL[i],[w,h]=DIM[i],ts=19.8+i*.32;
+    if(t<ts||t>26.4){el.style.opacity="0";continue}
+    const th=i*Math.PI/3+.95*(t-19.8);
+    let x=540+470*Math.sin(th),z=420*Math.cos(th),yr=YO[i]+26*Math.sin(2*th+i);
+    const y2=yr*Math.cos(alpha)-z*Math.sin(alpha),z2=yr*Math.sin(alpha)+z*Math.cos(alpha);
+    let y=930+y2,zz=z2,s=1-Math.pow(1-cl((t-ts)/.5),3),op=cl((t-ts)/.18),rot=-Math.sin(th)*22;
+    const gi=24.86+i*.08;
+    if(t>gi){const u=cl((t-gi)/1.15),e=u*u,P=palm(Math.min(t,26.5)),ang=th+e*Math.PI*3,rad=230*(1-e);
+      x=lerp(x,P[0]+rad*Math.cos(ang),e);y=lerp(y,P[1]-70+rad*Math.sin(ang)*.6,e);zz=lerp(zz,90,e);s*=(1-e)+e*.06;op*=1-sm(.8,1,u);rot*=1-e}
+    el.style.opacity=String(op);
+    el.style.transform=`translate3d(${(x-w/2).toFixed(2)}px,${(y-h/2).toFixed(2)}px,${zz.toFixed(2)}px) rotateY(${rot.toFixed(2)}deg) scale(${s.toFixed(4)})`;
+    GL[i].style.opacity=String(.9*(1-cl((t-ts)/.4)));
+  }
+  // orb
+  if(t>=25.75&&t<27.36){const p=orbPos(t);let sc=1-Math.pow(1-cl((t-25.75)/.4),3);
+    if(t>26.76&&t<27.0)sc*=1+.25*Math.sin((t-26.76)/.24*Math.PI);
+    if(t>=26.6)sc*=lerp(1,.8,cl((t-26.6)/.62));
+    if(t>=27.3)sc*=lerp(1,.12,cl((t-27.3)/.06));
+    for(const e of[orb,or1,or2]){e.style.left=p[0]+"px";e.style.top=p[1]+"px";e.style.opacity="1"}
+    orb.style.transform=`scale(${sc})`;or1.style.transform=`rotate(${(t*240)%360}deg) scale(${sc})`;or2.style.transform=`rotate(${(-t*180)%360}deg) scale(${sc})`;
+  }else{orb.style.opacity="0";or1.style.opacity="0";or2.style.opacity="0"}
+  // implosion burst at the top
+  const tb=27.36,B=[770,370];
+  if(t>=tb&&t<tb+.8){const k=t-tb;shk.style.left=B[0]+"px";shk.style.top=B[1]+"px";shk.style.opacity=String(1-cl(k/.5));shk.style.transform=`scale(${.1+3.2*(1-Math.pow(1-cl(k/.5),3))})`;
+    BP.forEach(p=>{const d=p.v*(1-Math.exp(-4.5*k));p.d.style.left=(B[0]+Math.cos(p.a)*d)+"px";p.d.style.top=(B[1]+Math.sin(p.a)*d+60*k*k)+"px";p.d.style.opacity=String(1-cl(k/.75));p.d.style.transform=`scale(${p.s*(1-.6*cl(k/.8))})`})}
+  else{shk.style.opacity="0";BP.forEach(p=>p.d.style.opacity="0")}
+}
+window.addEventListener("hf-seek",e=>renderAt(e.detail.time));
+renderAt(window.__hfThreeTime||0);
+</script>
+</template></body></html>

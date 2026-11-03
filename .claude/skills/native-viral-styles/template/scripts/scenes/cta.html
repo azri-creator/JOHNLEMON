@@ -1,0 +1,35 @@
+<!doctype html><html><head><meta charset="UTF-8" /></head><body><template>
+<style>
+/*COMMON*/
+#dk{position:absolute;left:0;top:640px;width:1080px;height:1280px;background:linear-gradient(180deg,rgba(6,9,13,0) 0%,rgba(6,9,13,.78) 28%,rgba(6,9,13,.92) 100%);opacity:0}
+#logo{position:absolute;left:250px;top:620px;width:580px;height:580px;opacity:0}
+#btn{position:absolute;left:150px;top:1452px;width:780px;height:128px;border-radius:100px;background:#7CFF3D;color:#06090D;display:flex;align-items:center;justify-content:center;gap:22px;font-weight:900;font-size:58px;letter-spacing:-0.02em;opacity:0;box-shadow:0 24px 70px rgba(124,255,61,.35)}
+#btn svg{width:58px;height:58px;stroke:#06090D;stroke-width:4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#cf{position:absolute;inset:0;pointer-events:none}
+.cf{position:absolute;left:0;top:0;opacity:0}
+</style>
+<div id="root" data-composition-id="cta" data-width="1080" data-height="1920">
+  <div id="dk"></div>
+  <img id="logo" src="assets/brand_logo.png" />
+  <div id="btn"><span>Tekan link</span><svg viewBox="0 0 24 24"><path d="M12 4v15M6 13l6 6 6-6"/></svg></div>
+  <div id="cf"></div>
+</div>
+<script>
+function rng(s){return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296}}
+const R=rng(123),cf=document.getElementById("cf"),P=[];
+const cols=["#7CFF3D","#F5F7FA","#FFE600","#F5F7FA"];
+for(let i=0;i<80;i++){const d=document.createElement("div");d.className="cf";const w=8+R()*12,h=6+R()*16;d.style.width=w+"px";d.style.height=h+"px";d.style.background=cols[i%4];d.style.borderRadius=(R()<.4?"50%":"3px");cf.appendChild(d);P.push({d,vx:(R()-.5)*1300,vy:-(900+R()*1200),rot:(R()-.5)*1440})}
+const tl=gsap.timeline({paused:true});
+// local 0 = 42.6 s
+tl.fromTo("#dk",{opacity:0},{opacity:1,duration:.5,ease:"power2.out"},.05);
+tl.fromTo("#logo",{opacity:0,y:30,scale:.94},{opacity:1,y:0,scale:1,duration:.6,ease:"expo.out"},.12);
+tl.fromTo("#btn",{opacity:0,y:50,scale:.92},{opacity:1,y:0,scale:1,duration:.55,ease:"expo.out"},1.0);
+tl.to("#btn",{scale:1.06,duration:.22,ease:"sine.inOut",yoyo:true,repeat:3},1.82);
+tl.to("#btn svg",{y:9,duration:.3,ease:"sine.inOut",yoyo:true,repeat:3},1.82);
+const T0=1.82;
+P.forEach(p=>{p.d.style.left="540px";p.d.style.top="1510px";
+  tl.fromTo(p.d,{opacity:1,x:0,y:0,rotate:0},{x:p.vx*.85,y:p.vy*.85,rotate:p.rot,duration:.8,ease:"power3.out",immediateRender:false},T0);
+  tl.to(p.d,{y:"+=380",opacity:0,duration:.5,ease:"power1.in"},T0+.8)});
+window.__timelines["cta"]=tl;
+</script>
+</template></body></html>

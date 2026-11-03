@@ -1,0 +1,20 @@
+<!doctype html><html><head><meta charset="UTF-8" /></head><body><template>
+<style>
+/*COMMON*/
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 70% 55% at 45% 38%,rgba(6,9,13,0) 40%,rgba(6,9,13,.85) 100%);opacity:0}
+#al{position:absolute;left:0;top:120px;width:1080px;text-align:center;font-weight:900;font-size:196px;line-height:1;letter-spacing:-0.05em;color:#F5F7FA;text-shadow:0 18px 60px rgba(0,0,0,.45)}
+#sl{position:absolute;left:110px;top:205px;width:860px;height:26px;background:#FF4D4D;border-radius:13px;transform-origin:0 50%;box-shadow:0 0 30px rgba(255,77,77,.6)}
+#ptop3{z-index:2}
+#stp{position:absolute;left:190px;top:960px;width:700px;height:200px;border-radius:30px;background:#F5F7FA;color:#06090D;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:130px;letter-spacing:-0.05em;opacity:0;z-index:3;box-shadow:0 30px 80px rgba(0,0,0,.4)}
+</style>
+<div id="root" data-composition-id="alasan" data-width="1080" data-height="1920">
+  <div id="vig"></div>
+</div>
+<script>
+const tl=gsap.timeline({paused:true});
+// local 0 = 37.7 s
+tl.fromTo("#vig",{opacity:0},{opacity:.75,duration:3.3,ease:"sine.inOut"},.1);
+tl.set("#vig",{opacity:0},3.48);
+window.__timelines["alasan"]=tl;
+</script>
+</template></body></html>

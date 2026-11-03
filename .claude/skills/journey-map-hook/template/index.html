@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./assets/vendor/three-build/three.module.js",
+          "three-addons/": "./assets/vendor/three-addons/"
+        }
+      }
+    </script>
+    <style>
+      @font-face { font-family: "Montserrat"; font-weight: 600; src: url("assets/fonts/Montserrat-600.woff2") format("woff2"); }
+      @font-face { font-family: "Montserrat"; font-weight: 800; src: url("assets/fonts/Montserrat-800.woff2") format("woff2"); }
+      @font-face { font-family: "Montserrat"; font-weight: 900; src: url("assets/fonts/Montserrat-900.woff2") format("woff2"); }
+      @font-face { font-family: "Cinzel"; font-weight: 600; src: url("assets/fonts/Cinzel-600.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 500; src: url("assets/fonts/Inter-500.woff2") format("woff2"); }
+      @font-face { font-family: "Inter"; font-weight: 700; src: url("assets/fonts/Inter-700.woff2") format("woff2"); }
+      @font-face { font-family: "Signature"; font-weight: 400; src: url("assets/fonts/Script-MrsSaint.woff2") format("woff2"); }
+
+      :root { --orange: #ff661f; --purple: #240064; --ink: #23172f; --lilac: #bba9ce; --mist: #e8e3ed; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #0b1c33; }
+      #root { position: absolute; inset: 0; width: 100%; height: 100%; overflow: hidden; background: #0b1c33; font-family: Inter, system-ui, sans-serif; }
+      .abs { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+
+      /* ---------- layers ---------- */
+      #bg-wrap { z-index: 0; overflow: hidden; }
+      #bg-punch { overflow: hidden; }
+      #bg { position: absolute; left: -96px; top: -54px; width: 2112px; height: 1188px; object-fit: cover; will-change: transform; }
+      #bg-grade { position: absolute; inset: 0; }
+
+      #map-wrap { z-index: 10; overflow: hidden; background: #0b1c33; visibility: hidden; }
+      #map-canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; display: block; }
+      #map-vig { position: absolute; inset: 0; pointer-events: none; }
+      #hud-labels { position: absolute; inset: 0; }
+      #hud-scan { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.03) 0 1px, rgba(0,0,0,0) 1px 4px); mix-blend-mode: overlay; opacity: .55; }
+
+      /* projected labels — minimal, no boxes */
+      .lbl { position: absolute; left: 0; top: 0; opacity: 0; transform-origin: 0 0; white-space: nowrap; will-change: transform, opacity; }
+      .lbl .dot { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 3px rgba(255,255,255,.28), 0 0 14px rgba(255,255,255,.9); }
+      .lbl .ring { position: absolute; left: -30px; top: -30px; width: 60px; height: 60px; border-radius: 50%; border: 2px solid rgba(255,255,255,.8); transform: scale(calc(.2 + var(--p1, 0) * 1)); opacity: calc(1 - var(--p1, 0)); }
+      .lbl .ring.r2 { transform: scale(calc(.2 + var(--p2, 0) * 1)); opacity: calc(1 - var(--p2, 0)); }
+      .lbl .tx { position: absolute; left: 20px; top: -14px; font: 700 20px/1 Montserrat, sans-serif; letter-spacing: .2em; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.8), 0 0 3px rgba(0,0,0,.9); }
+      .lbl.city .tx { font-size: 17px; opacity: .95; }
+      .lbl.city .ring { display: none; }
+      .lbl.city .dot { width: 9px; height: 9px; left: -4.5px; top: -4.5px; }
+      .lbl.major .dot { background: var(--orange); box-shadow: 0 0 0 4px rgba(255,255,255,.9), 0 0 24px var(--orange); width: 16px; height: 16px; left: -8px; top: -8px; }
+      .lbl.major .ring { border-color: var(--orange); border-width: 3px; }
+      .lbl.major .tx { font: 900 30px/1 Montserrat, sans-serif; letter-spacing: .14em; top: -16px; left: 28px; text-shadow: 0 3px 14px rgba(0,0,0,.85); }
+      .lbl.nbr .dot, .lbl.nbr .ring { display: none; }
+      .lbl.nbr .tx { left: -60px; top: -12px; font: 700 23px/1 Montserrat, sans-serif; letter-spacing: .32em; color: var(--c, #fff); text-shadow: 0 0 14px var(--c, #fff), 0 2px 8px rgba(0,0,0,.8); }
+
+      /* ---------- scrims for legibility (no boxes) ---------- */
+      #scrim-top { z-index: 36; pointer-events: none; background: linear-gradient(180deg, rgba(6,6,22,.26) 0%, rgba(6,6,22,.1) 18%, rgba(6,6,22,0) 32%); }
+      #scrim-bot { z-index: 36; pointer-events: none; background: linear-gradient(0deg, rgba(6,6,22,.24) 0%, rgba(6,6,22,.08) 20%, rgba(6,6,22,0) 34%); }
+
+      /* ---------- cinematic place titles ---------- */
+      .ttl { position: absolute; top: 40px; left: 0; width: 1920px; text-align: center; z-index: 42; pointer-events: none; visibility: hidden; opacity: 0; }
+      .ttl .bigw { display: inline-block; filter: drop-shadow(0 6px 26px rgba(0,0,0,.5)); }
+      .ttl .big { display: inline-block; font: 900 150px/1 Montserrat, sans-serif; letter-spacing: .02em; padding: 0 .06em; text-transform: uppercase;
+        background: linear-gradient(90deg, #ff661f 0%, #ff8f4a 38%, #ffd9c2 72%, #ffffff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .ttl .scr { display: block; font: 400 140px/1 Signature, cursive; color: #fff; margin-top: -6px; margin-left: 380px; transform: rotate(-3.5deg); transform-origin: 0 100%;
+        -webkit-text-stroke: 1.6px #fff; filter: drop-shadow(0 0 2px rgba(10,5,25,.95)) drop-shadow(0 0 10px rgba(10,5,25,.75)) drop-shadow(0 6px 22px rgba(0,0,0,.55)); white-space: nowrap; }
+      #t-titlis { left: -180px; } #t-titlis .big { font-size: 128px; } #t-titlis .scr { font-size: 118px; margin-top: -4px; margin-left: 260px; }
+      #t-spiez .big { font-size: 170px; } #t-spiez .scr { margin-left: 330px; margin-top: -10px; }
+
+      .num { position: absolute; left: 0; width: 1920px; top: 318px; text-align: center; z-index: 42; pointer-events: none; visibility: hidden; opacity: 0; }
+      .num .lab { font: 700 24px/1 Montserrat, sans-serif; letter-spacing: .5em; color: #fff; text-shadow: 0 2px 12px rgba(0,0,0,.8); margin-bottom: 4px; }
+      .num .val { display: inline-block; font: 900 200px/1 Montserrat, sans-serif; letter-spacing: -.01em;
+        background: linear-gradient(90deg, #ff661f 0%, #ffb27d 60%, #fff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+      .num { filter: drop-shadow(0 8px 30px rgba(0,0,0,.55)); }
+      .num .val small { font-size: .42em; margin-left: .08em; letter-spacing: .04em; }
+      .num .val > * { background: linear-gradient(90deg, #ff661f 0%, #ffb27d 60%, #fff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+      #num-cliff { left: 480px; top: 300px; } #num-cliff .val { font-size: 170px; }
+      #num-3000 { left: 400px; top: 300px; } #num-3000 .val { font-size: 170px; }
+
+      /* dotted route-style elevation profile (like a route map, no panel) */
+      #elev { position: absolute; left: 96px; top: 330px; width: 560px; height: 260px; z-index: 42; visibility: hidden; opacity: 0; pointer-events: none; }
+      #elev svg { width: 560px; height: 260px; overflow: visible; filter: drop-shadow(0 3px 10px rgba(0,0,0,.65)); }
+      #elev text { font: 700 19px/1 Montserrat, sans-serif; letter-spacing: .16em; fill: #fff; }
+
+      /* ---------- b-roll ---------- */
+      #broll { z-index: 20; }
+      .bk { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; visibility: hidden; opacity: 0; background: #08111f; }
+      .bk img, .bk .kbw { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; will-change: transform; }
+      .bk img { left: -80px; top: -45px; width: 2080px; height: 1170px; object-fit: cover; }
+      .bk .kbw video { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+      .bk-vig { display: none; }
+      .rc { position: absolute; width: 330px; height: 500px; border: 3px solid rgba(255,255,255,.95); box-shadow: 0 30px 60px rgba(0,0,0,.5), 0 0 40px rgba(255,102,31,.16); overflow: hidden; visibility: hidden; opacity: 0; z-index: 25; background: #111; }
+      .rc img { position: absolute; left: -6%; top: -6%; width: 112%; height: 112%; object-fit: cover; }
+      .rc .cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 18px 14px; background: linear-gradient(0deg, rgba(5,5,20,.8), rgba(5,5,20,0)); font: 700 15px/1 Montserrat, sans-serif; letter-spacing: .28em; color: #fff; text-transform: uppercase; }
+
+      /* ---------- presenter ---------- */
+      #pres-pip { z-index: 30; --ol: 0; filter:
+          drop-shadow(calc(var(--ol) * 4px) 0 0 #fff) drop-shadow(calc(var(--ol) * -4px) 0 0 #fff)
+          drop-shadow(0 calc(var(--ol) * 4px) 0 #fff) drop-shadow(0 calc(var(--ol) * -4px) 0 #fff)
+          drop-shadow(0 0 calc(var(--ol) * 26px) rgba(255,102,31,.75)); }
+      #pres-cam { position: absolute; inset: 0; }
+      #pres { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; object-fit: cover; }
+
+      /* ---------- captions ---------- */
+      #caps { z-index: 50; pointer-events: none; }
+      .cap { position: absolute; left: 0; width: 1920px; top: 892px; text-align: center; visibility: hidden; opacity: 0; font: 900 76px/1 Montserrat, sans-serif; color: #fff; letter-spacing: .01em; text-transform: uppercase;
+        -webkit-text-stroke: 11px #14091f; paint-order: stroke fill; text-shadow: 0 6px 0 rgba(20,9,31,.9), 0 10px 26px rgba(0,0,0,.55); white-space: nowrap; }
+      .cap .kw { color: var(--orange); }
+      #caps-in { position: absolute; inset: 0; }
+
+      /* ---------- CTA (typography, no boxes) ---------- */
+      #cta { z-index: 45; }
+      .cl { position: absolute; display: flex; align-items: center; gap: 18px; font: 800 38px/1 Montserrat, sans-serif; letter-spacing: .06em; color: #fff; text-transform: uppercase; opacity: 0; visibility: hidden; text-shadow: 0 3px 16px rgba(0,0,0,.75); white-space: nowrap; }
+      .cl i { width: 46px; height: 46px; border-radius: 50%; background: var(--orange); display: grid; place-items: center; font-style: normal; font-size: 26px; box-shadow: 0 0 22px rgba(255,102,31,.7); }
+      .cl.r { flex-direction: row-reverse; }
+      #brandbar { position: absolute; left: 90px; top: 62px; opacity: 0; visibility: hidden; }
+      #brandbar img { height: 104px; filter: drop-shadow(0 4px 16px rgba(0,0,0,.6)); }
+      #url { position: absolute; left: 0; width: 1920px; bottom: 52px; text-align: center; font: 800 44px/1 Montserrat, sans-serif; letter-spacing: .28em; color: #fff; opacity: 0; visibility: hidden; text-shadow: 0 3px 18px rgba(0,0,0,.8); }
+      #url span { color: var(--orange); }
+      #url::before { content: ""; display: block; width: 120px; height: 3px; background: var(--orange); margin: 0 auto 18px; }
+      #tagline { position: absolute; left: 96px; top: 176px; font: 700 20px/1 Montserrat, sans-serif; letter-spacing: .42em; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,.7); opacity: 0; visibility: hidden; text-transform: uppercase; }
+
+      /* ---------- transitions ---------- */
+      #vig { display: none; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="68.5" data-width="1920" data-height="1080">
+      <!-- talk backdrop (opening) -->
+      <div id="bg-wrap" class="abs"><div id="bg-punch" class="abs"><img id="bg" src="assets/bg-lauterbrunnen.png" alt="" /></div><div id="bg-grade"></div></div>
+
+      <!-- 3D terrain map: first ~10 s only -->
+      <div id="map-wrap" class="abs">
+        <canvas id="map-canvas" width="1920" height="1080"></canvas>
+        <div id="map-vig"></div>
+        <div id="hud-labels"></div>
+        <div id="hud-scan"></div>
+      </div>
+
+      <!-- real footage + stills (chronological: later sits above earlier) -->
+      <div id="broll" class="abs">
+        <div class="bk" id="bk-04"><img src="assets/broll/04-titlis-cable-car-mountain.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-snow"><div class="kbw"><video id="v-snow" class="clip" src="assets/clips/snow.mp4" muted playsinline data-start="11.9" data-duration="2.0" data-track-index="10"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-matter"><div class="kbw"><video id="v-matter" class="clip" src="assets/clips/matter.mp4" muted playsinline data-start="13.5" data-duration="2.9" data-track-index="11"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-dolo"><div class="kbw"><video id="v-dolo" class="clip" src="assets/clips/dolo.mp4" muted playsinline data-start="15.7" data-duration="3.4" data-track-index="12"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-07"><img src="assets/broll/07-cliff-walk-wide.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-08"><img src="assets/broll/08-cliff-walk-bridge.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-09"><img src="assets/broll/09-cliff-walk-side.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-10"><img src="assets/broll/07b-cliff-walk-wide-blur.jpg" alt="" style="filter: blur(30px) brightness(.55) saturate(1.2)" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-hills"><div class="kbw"><video id="v-hills" class="clip" src="assets/clips/hills.mp4" muted playsinline data-start="32.3" data-duration="3.3" data-track-index="13"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-bern"><div class="kbw"><video id="v-bern" class="clip" src="assets/clips/bern.mp4" muted playsinline data-start="35.2" data-duration="2.5" data-track-index="14"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-castle"><div class="kbw"><video id="v-castle" class="clip" src="assets/clips/castle.mp4" muted playsinline data-start="37.0" data-duration="2.2" data-track-index="15"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-16"><img src="assets/broll/16-spiez-vineyard.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-12"><img src="assets/broll/12-spiez-castle-lake.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-13"><img src="assets/broll/13-spiez-castle-harbour.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-21"><img src="assets/broll/21-spiez-aerial.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bk-20"><img src="assets/broll/20-spiez-lakeside.jpg" alt="" /><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-turq"><div class="kbw"><video id="v-turq" class="clip" src="assets/clips/turq.mp4" muted playsinline data-start="44.8" data-duration="4.5" data-track-index="16"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-reflect"><div class="kbw"><video id="v-reflect" class="clip" src="assets/clips/reflect.mp4" muted playsinline data-start="48.5" data-duration="4.0" data-track-index="17"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-tree"><div class="kbw"><video id="v-tree" class="clip" src="assets/clips/treelake.mp4" muted playsinline data-start="51.6" data-duration="13.6" data-track-index="18"></video></div><div class="bk-vig"></div></div>
+        <div class="bk" id="bv-sunset"><div class="kbw"><video id="v-sunset" class="clip" src="assets/clips/sunset.mp4" muted playsinline data-start="64.9" data-duration="3.6" data-track-index="19"></video></div><div class="bk-vig"></div></div>
+      </div>
+      <div class="rc" id="rc-10" style="left:560px; top:150px"><img src="assets/broll/10-cliff-walk-portrait.jpg" alt="" /><div class="cap">Cliff Walk</div></div>
+      <div class="rc" id="rc-11" style="left:1060px; top:130px"><img src="assets/broll/11-cliff-walk-portrait-alt.jpg" alt="" /><div class="cap">Jambatan gantung</div></div>
+
+      <div id="scrim-top" class="abs"></div>
+      <div id="scrim-bot" class="abs"></div>
+
+      <!-- cinematic place titles -->
+      <div class="ttl" id="t-ch"><div class="bigw"><div class="big">Switzerland</div></div><span class="scr">Tagline brand</span></div>
+      <div class="ttl" id="t-titlis"><div class="bigw"><div class="big">Mt Titlis</div></div><span class="scr">Cable Car ke Puncak</span></div>
+      <div class="ttl" id="t-cliff"><div class="bigw"><div class="big">Cliff Walk</div></div><span class="scr">Jambatan Gantung</span></div>
+      <div class="ttl" id="t-spiez"><div class="bigw"><div class="big">Spiez</div></div><span class="scr">Tasik Thun</span></div>
+      <div class="num" id="num-cliff"><div class="lab">DARI ARAS LAUT</div><div class="val"><span class="count" data-from="2500" data-to="3041" data-t0="24.9" data-t1="26.5">0</span><small>M</small></div></div>
+      <div class="num" id="num-3000"><div class="lab">KETINGGIAN</div><div class="val"><span class="count" data-from="1000" data-to="3000" data-t0="11.95" data-t1="13.3">0</span><small>M</small></div></div>
+
+      <!-- dotted route-style profile -->
+      <div id="elev">
+        <svg viewBox="0 0 560 260">
+          <clipPath id="elev-clip"><rect id="elev-clip-r" x="0" y="-20" width="0" height="300"/></clipPath>
+          <path id="elev-line" clip-path="url(#elev-clip)" d="M30,210 C100,206 160,190 220,160 C290,124 330,120 390,86 C450,52 500,40 530,34" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-dasharray="2 13"/>
+          <g id="elev-a"><circle cx="30" cy="210" r="8" fill="#fff"/><circle cx="30" cy="210" r="16" fill="none" stroke="#fff" stroke-width="2" opacity=".6"/><text x="30" y="250" text-anchor="start">ENGELBERG</text></g>
+          <g id="elev-b" opacity="0"><circle cx="530" cy="34" r="10" fill="#ff661f" stroke="#fff" stroke-width="3"/><text x="530" y="12" text-anchor="end">TITLIS</text></g>
+        </svg>
+      </div>
+
+      <!-- presenter (green-screen keyed to alpha) -->
+      <div id="pres-pip" class="abs">
+        <div id="pres-cam">
+          <video id="pres" class="clip" src="assets/presenter.webm" muted playsinline data-start="0" data-duration="68.5" data-track-index="3"></video>
+        </div>
+      </div>
+
+      <!-- CTA brand -->
+      <div id="cta" class="abs">
+        <div id="brandbar"><img src="assets/img/brand-logo.svg" alt="Logo" /></div>
+        <div id="tagline">Tagline brand</div>
+        <div class="cl" id="cl-1" style="left:84px; top:330px"><i>✓</i>Halal terbaik</div>
+        <div class="cl r" id="cl-2" style="right:84px; top:330px"><i>✓</i>Makan sedap</div>
+        <div class="cl" id="cl-3" style="left:84px; top:440px"><i>✓</i>Perjalanan best</div>
+        <div class="cl r" id="cl-4" style="right:84px; top:440px"><i>✓</i>Jaga customer</div>
+        <div id="url">namabrand<span>.com</span></div>
+      </div>
+
+      <div id="caps" class="abs"><div id="caps-in"></div></div>
+      <div id="vig" class="abs"></div>
+
+      <audio id="vo" src="assets/vo_clean.m4a" data-start="0" data-duration="68.5" data-track-index="0" data-volume="1"></audio>
+      <audio id="bgm" src="assets/bgm_mix.m4a" data-start="0" data-duration="68.5" data-track-index="1" data-volume="0.7"></audio>
+      <audio id="sfx" src="assets/sfx_mix.m4a" data-start="0" data-duration="64.5" data-track-index="2" data-volume="0.3"></audio>
+    </div>
+
+    <script src="assets/js/akg-config.js"></script>
+    <script src="assets/js/captions.js"></script>
+    <script type="module" src="assets/js/map.js"></script>
+    <script src="assets/js/anim.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = window.AKG_TL;
+    </script>
+  </body>
+</html>

@@ -1,0 +1,31 @@
+# Student media and builds never go to GitHub
+input/*
+!input/.gitkeep
+output/*
+!output/.gitkeep
+work/
+
+# Media anywhere
+*.mp4
+*.mov
+*.m4a
+*.mp3
+*.wav
+*.webm
+*.mkv
+
+# HyperFrames / Node / Python caches
+node_modules/
+.hyperframes/
+renders/
+snapshots/
+__pycache__/
+*.pyc
+
+# Secrets and OS files
+.env
+.env.*
+.DS_Store
+
+# ...but keep the media that ships inside skills (SFX packs, template assets)
+!.claude/skills/**

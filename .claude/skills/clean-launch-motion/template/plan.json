@@ -1,0 +1,30 @@
+{
+  "name": "CLM_Starter",
+  "script": "vo/vo_script_locked.txt",
+  "voice": {
+    "id": "PASTE_YOUR_ELEVENLABS_VOICE_ID",
+    "name_prefix": "",
+    "model": "eleven_multilingual_v2",
+    "language": "ms",
+    "settings": { "stability": 0.5, "similarity_boost": 0.8, "style": 0.0, "use_speaker_boost": true, "speed": 1.1 },
+    "seeds": [11, 23]
+  },
+  "scenes": ["hook", "phone", "cards", "check", "cta"],
+  "line_scene": ["hook", "phone", "cards", "check", "cta", "cta"],
+  "gaps": { "lead_in": 0.3, "in_scene": 0.26, "scene_change": 0.45 },
+  "lead": 0.18,
+  "end_hold": 3.5,
+  "music": { "target_bpm": 124 },
+  "sfx": [
+    { "type": "whoosh", "at": "phone:0", "off": -0.12, "gain": 0.2, "pan": 0.3, "dur": 0.7, "bright": 1800 },
+    { "type": "pop", "at": "phone:3", "off": -0.04, "gain": 0.22 },
+    { "type": "whoosh", "at": "cards:3", "off": -0.16, "gain": 0.16, "pan": -0.6, "dur": 0.4, "bright": 2800 },
+    { "type": "whoosh", "at": "cards:4", "off": -0.16, "gain": 0.16, "pan": 0.6, "dur": 0.4, "bright": 2800 },
+    { "type": "riser", "at": "check:0", "off": 0.1, "gain": 0.12, "dur": 0.5 },
+    { "type": "chime", "at": "check:0", "off": 0.55, "gain": 0.16 },
+    { "type": "shimmer", "at": "cta:0", "off": -0.18, "gain": 0.13 },
+    { "type": "chime", "at": "cta:1", "off": -0.2, "gain": 0.13, "notes": [74, 78, 81, 86] },
+    { "type": "pop", "at": "cta:-5", "off": -0.1, "gain": 0.24 },
+    { "type": "tap", "at": "cta:-2", "off": 0.12, "gain": 0.6 }
+  ]
+}

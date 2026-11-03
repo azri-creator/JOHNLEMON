@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Poppins"; font-weight: 600; src: url("assets/fonts/Poppins-600.woff2") format("woff2"); }
+      @font-face { font-family: "Poppins"; font-weight: 700; src: url("assets/fonts/Poppins-700.woff2") format("woff2"); }
+      @font-face { font-family: "Poppins"; font-weight: 800; src: url("assets/fonts/Poppins-800.woff2") format("woff2"); }
+      @font-face { font-family: "Sacramento"; font-weight: 400; src: url("assets/fonts/Sacramento-400.woff2") format("woff2"); }
+      @font-face { font-family: "NSD"; font-weight: 100 900; font-stretch: 62.5% 100%; src: url("assets/fonts/NotoSerifDisplay-800-62_5.woff2") format("woff2"); }
+
+      /* Destination act (0-15.4 s): brand gold titles with a navy edge. Brand act (from "Bersama Nama Brand"): white with a navy stroke + halo, gold accents. */
+      :root { --royal: #fada5e; --gold: #ffc72c; --gold-hi: #ffe07a; --navy: #0a1a4f; --deep: #071238; --ink: #0d1530; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #071238; }
+      #root { position: absolute; inset: 0; overflow: hidden; background: #071238; font-family: Poppins, sans-serif; }
+      .abs { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+
+      /* ---------- backgrounds ---------- */
+      #broll { z-index: 10; }
+      #cut { z-index: 35; }
+      .bk { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; visibility: hidden; background: #071238; }
+      .bk .kb { position: absolute; left: -54px; top: -96px; width: 1188px; height: 2112px; will-change: transform; }
+      .bk .kb img, .bk .kb video { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .bk .own { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      .bk .own video { width: 1080px; height: 1920px; display: block; }
+
+      /* ---------- vector map: flight to pin A, trail A -> B ---------- */
+      #mapwrap { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      #arcsvg, #trailsvg { position: absolute; left: 0; top: 0; }
+      #plane { position: absolute; left: 0; top: 0; width: 0; height: 0; visibility: hidden; }
+      #plane svg { position: absolute; left: -34px; top: -34px; filter: drop-shadow(0 4px 10px rgba(7, 18, 56, .7)); }
+      .mlab { position: absolute; width: 0; height: 0; visibility: hidden; }
+      .mlab span { position: absolute; transform: translateX(-50%); white-space: nowrap; font: 800 40px/1 Poppins, sans-serif; color: #fff; letter-spacing: .02em;
+        -webkit-text-stroke: 7px var(--navy); paint-order: stroke fill; text-shadow: 0 0 18px rgba(7, 18, 56, .9); }
+      .pin { position: absolute; width: 0; height: 0; visibility: hidden; }
+      .pin i { position: absolute; left: -16px; top: -16px; width: 32px; height: 32px; border-radius: 50%; background: var(--navy); border: 6px solid #fff; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
+      .pin.pb i { left: -24px; top: -24px; width: 48px; height: 48px; border-width: 8px; background: var(--navy); }
+      .pin span { position: absolute; white-space: nowrap; font: 800 50px/1 Poppins, sans-serif; color: #fff; letter-spacing: -0.01em;
+        -webkit-text-stroke: 9px var(--navy); paint-order: stroke fill; text-shadow: 0 6px 0 var(--navy), 0 0 22px rgba(7, 18, 56, .8); }
+      #pin-a span { left: -60px; top: -96px; }
+      #pin-b span { right: -50px; top: -118px; font-size: 66px; }
+      #pin-a em, #pin-b em { position: absolute; white-space: nowrap; font: 400 70px/1 Sacramento, cursive; color: var(--gold-hi); transform: rotate(-6deg);
+        text-shadow: 0 0 14px rgba(7, 18, 56, .95), 0 0 30px rgba(7, 18, 56, .7); }
+      #pin-a em { left: -70px; top: -170px; }
+      #pin-b em { left: -150px; top: -206px; }
+
+      /* ---------- titles ---------- */
+      .hero, .place { position: absolute; left: 0; width: 1080px; text-align: center; pointer-events: none; visibility: hidden; }
+      .hero { z-index: 25; top: 605px; }           /* behind the presenter: the head overlaps the word */
+      .place { z-index: 40; top: 170px; }
+      .hero .w { position: relative; display: inline-block; }
+      .hero .big { display: block; font: 800 250px/0.9 Poppins, sans-serif; letter-spacing: -0.035em; color: #fff;
+        text-shadow: 0 10px 50px rgba(7, 18, 56, 0.5), 0 2px 10px rgba(7, 18, 56, 0.3); white-space: nowrap; }
+      .hero .scr { position: absolute; left: 0px; top: -88px; font: 400 128px/1 Sacramento, cursive; color: var(--gold-hi); transform: rotate(-7deg);
+        transform-origin: 0 100%; text-shadow: 0 4px 26px rgba(7, 18, 56, 0.7); white-space: nowrap; }
+      .place .kick { display: inline-flex; align-items: center; gap: 16px; font: italic 700 44px/1 Poppins, sans-serif; color: #fff; letter-spacing: 0.01em;
+        text-shadow: 0 3px 18px rgba(7, 18, 56, 0.75), 0 0 6px rgba(7, 18, 56, .6); margin-bottom: 14px; }
+      .place .big { font-family: NSD, serif; font-weight: 800; font-stretch: 62.5%; font-variation-settings: "wdth" 62.5, "wght" 800;
+        font-size: 210px; line-height: 0.86; letter-spacing: 0.005em; color: var(--gold); text-transform: uppercase;
+        -webkit-text-stroke: 8px var(--navy); paint-order: stroke fill;
+        text-shadow: 0 7px 0 var(--navy), 0 0 34px rgba(7, 18, 56, 0.55); }
+      .place .big .ln { display: block; }
+      /* brand act */
+      .place.mk .kick { color: #fff; -webkit-text-stroke: 7px var(--navy); paint-order: stroke fill; text-shadow: 0 0 18px rgba(7, 18, 56, 0.95), 0 0 40px rgba(7, 18, 56, 0.6); }
+      .place.mk .big { color: #fff; -webkit-text-stroke: 10px var(--navy); paint-order: stroke fill; text-shadow: 0 8px 0 var(--navy), 0 0 30px rgba(7, 18, 56, 0.9), 0 0 70px rgba(7, 18, 56, 0.55); }
+      .place.mk .big .g { color: var(--gold); }
+      .hero.mk .big { -webkit-text-stroke: 12px var(--navy); paint-order: stroke fill; text-shadow: 0 10px 0 var(--navy), 0 0 34px rgba(7, 18, 56, 0.9), 0 0 80px rgba(7, 18, 56, 0.55); }
+      .hero.mk .scr { color: var(--gold-hi); -webkit-text-stroke: 6px var(--navy); paint-order: stroke fill; text-shadow: 0 0 16px rgba(7, 18, 56, 0.95), 0 0 36px rgba(7, 18, 56, 0.6); }
+
+      /* ---------- presenter (pixel-exact cut-out) ---------- */
+      #pres-wrap { z-index: 30; }
+      #pres-cam { position: absolute; inset: 0; }
+      #pres { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+
+      /* ---------- captions ---------- */
+      #caps { z-index: 50; pointer-events: none; }
+      .cap { position: absolute; left: 60px; width: 960px; top: 1500px; text-align: center; visibility: hidden; font: 800 66px/1.08 Poppins, sans-serif; color: #fff; letter-spacing: -0.01em;
+        -webkit-text-stroke: 9px var(--ink); paint-order: stroke fill; text-shadow: 0 7px 0 rgba(13, 21, 48, 0.9), 0 12px 30px rgba(0, 0, 0, 0.4); }
+      .cap .kw { color: var(--royal); }
+      .cap.mk { -webkit-text-stroke: 10px var(--navy); text-shadow: 0 7px 0 var(--navy), 0 0 22px rgba(7, 18, 56, 0.9), 0 0 48px rgba(7, 18, 56, 0.65); }
+
+      /* ---------- end: logo over the CTA footage ---------- */
+      #end { z-index: 60; visibility: hidden; }
+      #end-logo { position: absolute; left: 150px; top: 520px; width: 780px; height: 546px; }
+      #end-logo img { width: 780px; height: 546px; display: block; filter: drop-shadow(0 0 26px rgba(7, 18, 56, .95)) drop-shadow(0 14px 40px rgba(7, 18, 56, .7)); }
+      #end-sweep { position: absolute; left: 0; top: 0; width: 780px; height: 546px;
+        -webkit-mask-image: url("assets/img/brand-logo.png"); mask-image: url("assets/img/brand-logo.png"); -webkit-mask-size: 780px 546px; mask-size: 780px 546px;
+        background: linear-gradient(105deg, rgba(255,255,255,0) 38%, rgba(255,248,220,.95) 50%, rgba(255,255,255,0) 62%); background-size: 300% 100%; background-position: 100% 0; }
+      #end-scr { position: absolute; left: 0; width: 1080px; top: 1120px; text-align: center; white-space: nowrap; font: 400 84px/1 Sacramento, cursive; color: #fff; transform: rotate(-4deg);
+        -webkit-text-stroke: 5px var(--navy); paint-order: stroke fill; text-shadow: 0 0 16px rgba(7, 18, 56, 0.95), 0 0 40px rgba(7, 18, 56, 0.7); }
+      #end-wa { position: absolute; left: 0; width: 1080px; top: 1290px; text-align: center; font: 800 58px/1 Poppins, sans-serif; color: #fff; letter-spacing: 0.01em;
+        -webkit-text-stroke: 9px var(--navy); paint-order: stroke fill; text-shadow: 0 6px 0 var(--navy), 0 0 26px rgba(7, 18, 56, 0.9), 0 0 56px rgba(7, 18, 56, 0.55); }
+      #end-wa b { color: var(--royal); font-weight: 800; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="45.6" data-width="1080" data-height="1920">
+      <!-- backgrounds, chronological: each later layer covers the earlier one -->
+      <div id="broll" class="abs">
+        <div class="bk" id="bkown1"><div class="own" id="own-cam"><video id="v-own1" class="clip" src="assets/clips/own1.mp4" muted playsinline data-start="0" data-duration="16.4" data-track-index="10"></video></div></div>
+        <div class="bk" id="bklobby"><div class="kb"><video id="v-lobby" class="clip" src="assets/clips/lobby.mp4" muted playsinline data-start="14.6" data-duration="7.2" data-track-index="11"></video></div></div>
+        <div class="bk" id="bkmap"><div class="kb"><img src="assets/broll/mapbg.jpg" alt="" style="filter: blur(22px)" /></div>
+          <div id="mapwrap"></div>
+          <svg id="arcsvg" width="1080" height="1920" viewBox="0 0 1080 1920">
+            <path id="arc-case" fill="none" stroke="#ffffff" stroke-width="13" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+            <path id="arc" fill="none" stroke="#ffc72c" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+          </svg>
+          <div class="mlab" id="lab-dest"><span>UAE</span></div>
+          <div class="mlab" id="lab-origin"><span>MALAYSIA</span></div>
+          <div id="plane"><svg width="68" height="68" viewBox="0 0 24 24"><path fill="#ffffff" stroke="#0a1a4f" stroke-width="0.9" stroke-linejoin="round" d="M21.5 12c0-.8-.7-1.4-1.5-1.4h-5.2L10.2 3H8.4l2.4 7.6H6.2L4.5 8.3H3l1 3.7-1 3.7h1.5l1.7-2.3h4.6L8.4 21h1.8l4.6-7.6H20c.8 0 1.5-.6 1.5-1.4Z"/></svg></div>
+          <svg id="trailsvg" width="1080" height="1920" viewBox="0 0 1080 1920">
+            <path id="trail-case" fill="none" stroke="#ffffff" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+            <path id="trail" fill="none" stroke="#0a1a4f" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1 1" stroke-dashoffset="1"/>
+          </svg>
+          <div class="pin" id="pin-a"><i></i><em>hari pertama</em><span>Abu Dhabi</span></div>
+          <div class="pin pb" id="pin-b"><i></i><em>seterusnya</em><span>Dubai</span></div>
+        </div>
+        <div class="bk" id="bkstreet"><div class="kb"><video id="v-street" class="clip" src="assets/clips/street.mp4" muted playsinline data-start="27.45" data-duration="5.0" data-track-index="12"></video></div></div>
+        <div class="bk" id="bkcta"><div class="kb"><video id="v-cta" class="clip" src="assets/clips/cta.mp4" muted playsinline data-start="37.1" data-duration="8.5" data-track-index="13"></video></div></div>
+      </div>
+
+      <!-- hero words: BEHIND the presenter -->
+      <div class="hero" id="h-years" style="top:500px"><div class="w"><span class="scr" style="top:-92px;left:20px">setelah</span><span class="big" style="font-size:122px">Bertahun-tahun</span></div></div>
+      <div class="hero" id="h-syukur" style="top:425px"><div class="w"><span class="scr" style="left:24px">dan</span><span class="big" style="font-size:168px">Bersyukur</span></div></div>
+      <div class="hero mk" id="h-yakin" style="top:320px"><div class="w"><span class="scr">lebih</span><span class="big">Yakin</span></div></div>
+      <div class="hero mk" id="h-risau" style="top:285px"><div class="w"><span class="scr">tak perlu</span><span class="big">Risau</span></div></div>
+
+      <!-- presenter -->
+      <div id="pres-wrap" class="abs">
+        <div id="pres-cam">
+          <video id="pres" class="clip" src="assets/presenter.webm" muted playsinline data-start="0" data-duration="42.43" data-track-index="3"></video>
+        </div>
+      </div>
+
+      <!-- full-frame cutaways and the seated L5 shots: above the presenter -->
+      <div id="cut" class="abs">
+        <div class="bk" id="ccamel"><div class="kb"><video id="v-camel" class="clip" src="assets/clips/camel.mp4" muted playsinline data-start="5.6" data-duration="4.0" data-track-index="20"></video></div></div>
+        <div class="bk" id="cview"><div class="kb"><video id="v-view" class="clip" src="assets/clips/view.mp4" muted playsinline data-start="12.5" data-duration="4.2" data-track-index="21"></video></div></div>
+        <div class="bk" id="cown5a"><div class="own"><video id="v-own5a" class="clip" src="assets/clips/own5a.mp4" muted playsinline data-start="30.3" data-duration="3.8" data-track-index="22"></video></div></div>
+        <div class="bk" id="ccouple"><div class="kb"><video id="v-couple" class="clip" src="assets/clips/couple.mp4" muted playsinline data-start="33.3" data-duration="4.0" data-track-index="23"></video></div></div>
+        <div class="bk" id="cown5b"><div class="own"><video id="v-own5b" class="clip" src="assets/clips/own5b.mp4" muted playsinline data-start="35.2" data-duration="3.5" data-track-index="24"></video></div></div>
+        <div class="bk" id="cown6"><div class="own"><video id="v-own6" class="clip" src="assets/clips/own6.mp4" muted playsinline data-start="37.1" data-duration="6.1" data-track-index="25"></video></div></div>
+      </div>
+
+      <!-- place titles: in front -->
+      <div class="place" id="p-impian"><div class="kick">Inilah masanya untuk</div><div class="big"><span class="ln">Capai</span><span class="ln">Impian</span></div></div>
+      <div class="place" id="p-dest"><div class="kick">Destinasi impian</div><div class="big"><span class="ln">Jom</span><span class="ln">Bercuti</span></div></div>
+      <div class="place mk" id="p-mk" style="top:150px"><div class="kick">Bersama</div><div class="big" style="font-size:170px"><span class="ln"><span class="g">Nama</span> Brand</span></div></div>
+      <div class="place mk" id="p-couple" style="top:150px"><div class="kick">Bercuti bersama</div><div class="big" style="font-size:176px"><span class="ln">Pasangan</span><span class="ln"><span class="g">&amp;</span> Keluarga</span></div></div>
+
+      <div class="place mk" id="p-wa" style="top:150px"><div class="kick">Klik sekarang</div><div class="big" style="font-size:172px"><span class="ln"><span class="g">WhatsApp</span> Kami</span></div></div>
+
+      <div id="caps" class="abs"></div>
+
+      <div id="end" class="abs">
+        <div id="end-logo"><img src="assets/img/brand-logo.png" alt="Logo" /><div id="end-sweep"></div></div>
+        <div id="end-scr">menemani perjalanan terindah anda</div>
+        <div id="end-wa"><b>WhatsApp</b> Nama Brand</div>
+      </div>
+
+      <audio id="mix" src="assets/audio_mix.wav" data-start="0" data-duration="45.6" data-track-index="0" data-volume="1"></audio>
+    </div>
+
+    <script src="assets/js/routemap.js"></script>
+    <script src="assets/js/captions.js"></script>
+    <script src="assets/js/anim.js"></script>
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = window.AKG_TL;
+    </script>
+  </body>
+</html>
